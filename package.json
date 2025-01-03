@@ -1,0 +1,17 @@
+{
+  "name": "educlass",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "prepare": "husky install",
+    "lint:android": "cd apps/android-app && ./gradlew lint",
+    "lint:api": "cd apps/api && pnpm run lint"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "husky": "^8.0.0"
+  }
+}
