@@ -12,6 +12,11 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "husky": "^8.0.0"
+    "husky": "^8.0.0",
+    "lint-staged": "^15.3.0"
+  },
+  "lint-staged": {
+    "**/apps/android-app/**/*.java": "sh -c 'cd apps/android-app && ./gradlew lint'",
+    "**/apps/api/**/*.{js,ts,json}": "sh -c 'cd apps/api && pnpm run lint'"
   }
 }

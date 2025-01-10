@@ -1,2 +1,1 @@
-pnpm run lint:android
-pnpm run lint:api
+npx lint-staged
