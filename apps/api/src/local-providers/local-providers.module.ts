@@ -7,5 +7,6 @@ import { LocalProvider } from './entities/local-provider.entity';
 @Module({
   imports: [TypeOrmModule.forFeature([LocalProvider])],
   providers: [LocalProvidersResolver, LocalProvidersService],
+  exports: [LocalProvidersService],
 })
 export class LocalProvidersModule {}

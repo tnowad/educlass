@@ -30,6 +30,7 @@ type Mutation {
   createUser(createUserInput: CreateUserInput!): User!
   removeLocalProvider(id: String!): LocalProvider!
   removeUser(id: String!): User!
+  signIn(signInInput: SignInInput!): SignInResponse!
   updateLocalProvider(updateLocalProviderInput: UpdateLocalProviderInput!): LocalProvider!
   updateUser(updateUserInput: UpdateUserInput!): User!
 }
@@ -39,6 +40,16 @@ type Query {
   localProviders: [LocalProvider!]!
   user(id: String!): User!
   users: [User!]!
+}
+
+input SignInInput {
+  email: String!
+  password: String!
+}
+
+type SignInResponse {
+  accessToken: String!
+  refreshToken: String!
 }
 
 input UpdateLocalProviderInput {
