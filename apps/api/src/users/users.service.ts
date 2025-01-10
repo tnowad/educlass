@@ -1,30 +1,33 @@
 import { Injectable } from '@nestjs/common';
 import { CreateUserInput } from './dto/create-user.input';
 import { UpdateUserInput } from './dto/update-user.input';
+import { InjectRepository } from '@nestjs/typeorm';
+import { User } from './entities/user.entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class UsersService {
+  constructor(
+    @InjectRepository(User) private usersRepository: Repository<User>,
+  ) {}
+
   create(createUserInput: CreateUserInput) {
-    console.log(createUserInput);
-    throw new Error('Method not implemented.');
+    return this.usersRepository.save(createUserInput);
   }
 
   findAll() {
-    throw new Error('Method not implemented.');
+    return this.usersRepository.find();
   }
 
-  findOne(id: number) {
-    console.log(id);
-    throw new Error('Method not implemented.');
+  findOne(id: string) {
+    return this.usersRepository.findOne({ where: { id } });
   }
 
-  update(id: number, updateUserInput: UpdateUserInput) {
-    console.log(id, updateUserInput);
-    throw new Error('Method not implemented.');
+  update(id: string, updateUserInput: UpdateUserInput) {
+    return this.usersRepository.update(id, updateUserInput);
   }
 
-  remove(id: number) {
-    console.log(id);
-    throw new Error('Method not implemented.');
+  remove(id: string) {
+    return this.usersRepository.delete(id);
   }
 }
