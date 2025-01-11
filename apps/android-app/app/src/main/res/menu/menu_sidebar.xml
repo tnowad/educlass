@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_classes"
+            android:title="Classes"
+            android:icon="@drawable/ic_groups" />
+        <item
+            android:id="@+id/nav_notification"
+            android:title="Notifications"
+            android:icon="@drawable/ic_notifications" />
+    </group>
+
+
+    <item
+        android:title="ENROLLED"
+        >
+        <menu>
+            <group android:checkableBehavior="single">
+                <item
+                    android:id="@+id/nav_1"
+                    android:title="Subject 1"
+                    android:icon="@drawable/ic_groups"
+                    />
+                <item
+                    android:id="@+id/nav_2"
+                    android:title="Subject 2"
+                    android:icon="@drawable/ic_groups"
+                    />
+
+                <item
+                    android:id="@+id/nav_3"
+                    android:title="Subject 3"
+                    android:icon="@drawable/ic_groups"
+                    />
+            </group>
+        </menu>
+
+    </item>
+
+
+    <item android:title="">
+        <menu>
+            <group android:checkableBehavior="single">
+                <item
+                    android:id="@+id/archivedClasses"
+                    android:title="Archived Classes"
+                    android:icon="@drawable/ic_folder_check"
+                    />
+
+                <item
+                    android:id="@+id/classroomFolder"
+                    android:title="Classroom Folder"
+                    android:icon="@drawable/ic_folder"
+                    />
+
+                <item
+                    android:id="@+id/settings"
+                    android:title="Settings"
+                    android:icon="@drawable/ic_settings"
+                    />
+            </group>
+        </menu>
+    </item>
+
+
+
+
+</menu>
