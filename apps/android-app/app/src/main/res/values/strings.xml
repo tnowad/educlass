@@ -9,4 +9,14 @@
     <string name="text_google_sign_in">Sign In with Google</string>
     <string name="text_facebook_sign_in">Sign In with Facebook</string>
     <string name="text_github_sign_in">Sign In with GitHub</string>
+    <string name="text_classes">Classes</string>
+    <string name="text_notifications">Notifications</string>
+    <string name="text_enrolled">ENROLLED</string>
+    <string name="text_archived_classes">Archived Classes</string>
+    <string name="text_class_room_folder">Classroom Folder</string>
+    <string name="text_settings">Settings</string>
+    <string name="text_navigation_drawer_open">Open navigation drawer</string>
+    <string name="text_navigation_drawer_close">Close navigation drawer</string>
+    <string name="text_accounts">Accounts</string>
+    <string name="text_logout">Logout</string>
 </resources>
