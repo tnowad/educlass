@@ -1,9 +1,11 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
+import { UserSeedModule } from './user-seed/user-seed.module';
 
 @Module({
   imports: [
+    UserSeedModule,
     ConfigModule.forRoot({
       envFilePath: '.env',
     }),
