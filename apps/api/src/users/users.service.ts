@@ -34,6 +34,10 @@ export class UsersService {
     return this.usersRepository.update(id, updateUserInput);
   }
 
+  save(user: User) {
+    return this.usersRepository.save(user);
+  }
+
   remove(id: string) {
     return this.usersRepository.delete(id);
   }
