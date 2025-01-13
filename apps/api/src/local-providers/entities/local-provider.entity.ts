@@ -10,7 +10,7 @@ import {
 } from 'typeorm';
 
 @ObjectType()
-@Entity()
+@Entity({ name: 'local_providers' })
 export class LocalProvider {
   @Field()
   @PrimaryGeneratedColumn('uuid')

@@ -4,6 +4,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  Index,
   JoinColumn,
   OneToOne,
   PrimaryGeneratedColumn,
@@ -11,7 +12,9 @@ import {
 } from 'typeorm';
 
 @ObjectType()
-@Entity()
+@Entity({
+  name: 'users',
+})
 export class User {
   @Field()
   @PrimaryGeneratedColumn('uuid')
@@ -23,6 +26,7 @@ export class User {
 
   @Field()
   @Column({ type: 'varchar', length: 255, unique: true })
+  @Index({ unique: true })
   email: string;
 
   @Field()
@@ -42,6 +46,10 @@ export class User {
     cascade: true,
     nullable: true,
   })
-  @JoinColumn()
+  @JoinColumn({
+    name: 'localProviderId',
+    referencedColumnName: 'id',
+    foreignKeyConstraintName: 'FK_localProvider_user',
+  })
   localProvider: LocalProvider;
 }
