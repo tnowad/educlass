@@ -30,8 +30,8 @@ type Mutation {
   createUser(createUserInput: CreateUserInput!): User!
   removeLocalProvider(id: String!): LocalProvider!
   removeUser(id: String!): User!
-  signIn(signInInput: SignInInput!): SignInResponse!
-  signUp(signUpInput: SignUpInput!): User!
+  signIn(signInInput: SignInInput!): TokensResponse!
+  signUp(signUpInput: SignUpInput!): TokensResponse!
   updateLocalProvider(updateLocalProviderInput: UpdateLocalProviderInput!): LocalProvider!
   updateUser(updateUserInput: UpdateUserInput!): User!
 }
@@ -48,15 +48,15 @@ input SignInInput {
   password: String!
 }
 
-type SignInResponse {
-  accessToken: String!
-  refreshToken: String!
-}
-
 input SignUpInput {
   email: String!
   name: String!
   password: String!
+}
+
+type TokensResponse {
+  accessToken: String!
+  refreshToken: String!
 }
 
 input UpdateLocalProviderInput {

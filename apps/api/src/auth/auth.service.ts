@@ -6,12 +6,15 @@ import { User } from 'src/users/entities/user.entity';
 import { SignUpInput } from './dtos/sign-up.input';
 import { LocalProvidersService } from 'src/local-providers/local-providers.service';
 import { hashSync } from 'bcryptjs';
+import { JwtService } from '@nestjs/jwt';
+import { TokensResponse } from './dtos/tokens-response.dto';
 
 @Injectable()
 export class AuthService {
   constructor(
     private userService: UsersService,
     private localProvidersService: LocalProvidersService,
+    private jwtService: JwtService,
   ) {}
 
   async signIn(signInInput: SignInInput): Promise<User> {
@@ -32,7 +35,7 @@ export class AuthService {
     return user;
   }
 
-  async signUp(signUpInput: SignUpInput): Promise<User> {
+  async signUp(signUpInput: SignUpInput): Promise<TokensResponse> {
     if (await this.userService.findOneByEmail(signUpInput.email)) {
       return null;
     }
@@ -49,6 +52,14 @@ export class AuthService {
 
     user.localProvider = localProvider;
 
-    return this.userService.save(user);
+    this.userService.save(user);
+
+    const payload = { email: user.email, sub: user.id };
+    return {
+      accessToken: this.jwtService.sign(payload),
+      refreshToken: this.jwtService.sign(payload, {
+        expiresIn: '7d',
+      }),
+    };
   }
 }
