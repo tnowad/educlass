@@ -30,4 +30,10 @@ export class LocalProvidersService {
   remove(id: string) {
     return this.localProvidersRepository.delete(id);
   }
+
+  async findLocalProviderByUserId(userId: string): Promise<LocalProvider> {
+    return this.localProvidersRepository.findOne({
+      where: { user: { id: userId } },
+    });
+  }
 }
