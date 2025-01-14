@@ -10,6 +10,7 @@ import { ConfigModule } from '@nestjs/config';
 import { LocalProvidersModule } from './local-providers/local-providers.module';
 import { JwtModule } from '@nestjs/jwt';
 import { MailerModule } from './mailer/mailer.module';
+import { MailModule } from './mail/mail.module';
 
 @Module({
   imports: [
@@ -43,6 +44,7 @@ import { MailerModule } from './mailer/mailer.module';
     AuthModule,
     LocalProvidersModule,
     MailerModule,
+    MailModule,
   ],
 })
 export class AppModule {}

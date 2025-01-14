@@ -8,6 +8,7 @@ import { LocalProvidersService } from 'src/local-providers/local-providers.servi
 import { hashSync } from 'bcryptjs';
 import { JwtService } from '@nestjs/jwt';
 import { TokensResponse } from './dtos/tokens-response.dto';
+import { MailService } from 'src/mail/mail.service';
 
 @Injectable()
 export class AuthService {
@@ -15,6 +16,7 @@ export class AuthService {
     private userService: UsersService,
     private localProvidersService: LocalProvidersService,
     private jwtService: JwtService,
+    private mailService: MailService,
   ) {}
 
   async signIn(signInInput: SignInInput): Promise<User> {
@@ -53,6 +55,13 @@ export class AuthService {
     user.localProvider = localProvider;
 
     this.userService.save(user);
+
+    await this.mailService.userSignUp({
+      to: user.email,
+      data: {
+        hash: user.email,
+      },
+    });
 
     const payload = { email: user.email, sub: user.id };
     return {
