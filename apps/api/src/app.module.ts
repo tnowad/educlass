@@ -9,6 +9,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { LocalProvidersModule } from './local-providers/local-providers.module';
 import { JwtModule } from '@nestjs/jwt';
+import { MailerModule } from './mailer/mailer.module';
 
 @Module({
   imports: [
@@ -41,6 +42,7 @@ import { JwtModule } from '@nestjs/jwt';
     UsersModule,
     AuthModule,
     LocalProvidersModule,
+    MailerModule,
   ],
 })
 export class AppModule {}

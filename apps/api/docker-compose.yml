@@ -8,9 +8,17 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}
     ports:
-      - "5432:5432"
+      - '5432:5432'
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    networks:
+      - backend_network
+
+  maildev:
+    image: maildev/maildev
+    ports:
+      - '1025:1025'
+      - '1080:1080'
     networks:
       - backend_network
 
