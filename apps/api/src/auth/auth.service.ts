@@ -1,11 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { UsersService } from 'src/users/users.service';
-import bcrypt from 'bcryptjs';
 import { SignInInput } from './dtos/sign-in.input';
-import { User } from 'src/users/entities/user.entity';
 import { SignUpInput } from './dtos/sign-up.input';
 import { LocalProvidersService } from 'src/local-providers/local-providers.service';
-import { hashSync } from 'bcryptjs';
+import { hashSync, compareSync } from 'bcryptjs';
 import { JwtService } from '@nestjs/jwt';
 import { TokensResponse } from './dtos/tokens-response.dto';
 import { MailService } from 'src/mail/mail.service';
@@ -19,27 +17,33 @@ export class AuthService {
     private mailService: MailService,
   ) {}
 
-  async signIn(signInInput: SignInInput): Promise<User> {
+  async signIn(signInInput: SignInInput): Promise<TokensResponse> {
     const user = await this.userService.findOneByEmail(signInInput.email);
     if (!user) {
-      return null;
+      throw new ForbiddenException('User not found');
     }
     if (!user.localProvider) {
-      return null;
+      throw new ForbiddenException('Sign with local provider not found');
     }
-    const passwordIsValid = bcrypt.compareSync(
+    const passwordIsValid = compareSync(
       signInInput.password,
       user.localProvider.password,
     );
     if (!passwordIsValid) {
-      return null;
+      throw new ForbiddenException('Invalid password');
     }
-    return user;
+    const payload = { email: user.email, sub: user.id };
+    return {
+      accessToken: this.jwtService.sign(payload),
+      refreshToken: this.jwtService.sign(payload, {
+        expiresIn: '7d',
+      }),
+    };
   }
 
   async signUp(signUpInput: SignUpInput): Promise<TokensResponse> {
     if (await this.userService.findOneByEmail(signUpInput.email)) {
-      return null;
+      throw new ForbiddenException('Email already exists');
     }
 
     const user = await this.userService.create({
