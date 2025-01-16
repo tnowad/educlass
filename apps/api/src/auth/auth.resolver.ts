@@ -9,9 +9,10 @@ export class AuthResolver {
   constructor(private authService: AuthService) {}
 
   @Mutation(() => TokensResponse)
-  signIn(@Args('signInInput') signInInput: SignInInput): TokensResponse {
-    console.log(signInInput);
-    return { accessToken: 'access token', refreshToken: 'refresh token' };
+  signIn(
+    @Args('signInInput') signInInput: SignInInput,
+  ): Promise<TokensResponse> {
+    return this.authService.signIn(signInInput);
   }
 
   @Mutation(() => TokensResponse)
