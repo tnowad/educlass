@@ -1,8 +1,16 @@
-import { Resolver, Query, Mutation, Args } from '@nestjs/graphql';
+import {
+  Resolver,
+  Query,
+  Mutation,
+  Args,
+  ResolveField,
+  Parent,
+} from '@nestjs/graphql';
 import { LocalProvidersService } from './local-providers.service';
 import { LocalProvider } from './entities/local-provider.entity';
 import { CreateLocalProviderInput } from './dto/create-local-provider.input';
 import { UpdateLocalProviderInput } from './dto/update-local-provider.input';
+import { User } from 'src/users/entities/user.entity';
 
 @Resolver(() => LocalProvider)
 export class LocalProvidersResolver {
@@ -40,5 +48,12 @@ export class LocalProvidersResolver {
   @Mutation(() => LocalProvider)
   removeLocalProvider(@Args('id') id: string) {
     return this.localProvidersService.remove(id);
+  }
+
+  @ResolveField(() => User, { nullable: true })
+  async user(@Parent() localProvider: LocalProvider): Promise<User> {
+    return this.localProvidersService.findUserByLocalProviderId(
+      localProvider.id,
+    );
   }
 }
