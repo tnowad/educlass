@@ -6,6 +6,7 @@
     <string name="text_sign_in">Sign In</string>
     <string name="text_forgot_password_prompt">Forgotten password?</string>
     <string name="text_sign_up_prompt">Don\'t have an account? <u>Sign Up</u></string>
+    <string name="text_sign_in_prompt">Already have an account? <u>Sign In</u></string>
     <string name="text_google_sign_in">Sign In with Google</string>
     <string name="text_facebook_sign_in">Sign In with Facebook</string>
     <string name="text_github_sign_in">Sign In with GitHub</string>
@@ -19,4 +20,7 @@
     <string name="text_navigation_drawer_close">Close navigation drawer</string>
     <string name="text_accounts">Accounts</string>
     <string name="text_logout">Logout</string>
+    <string name="hint_confirm_password">Confirm password</string>
+    <string name="text_sign_up">SignUp</string>
+
 </resources>

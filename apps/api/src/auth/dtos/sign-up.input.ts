@@ -5,6 +5,10 @@ import { IsString } from 'class-validator';
 export class SignUpInput {
   @Field()
   @IsString()
+  name: string;
+
+  @Field()
+  @IsString()
   email: string;
 
   @Field()
