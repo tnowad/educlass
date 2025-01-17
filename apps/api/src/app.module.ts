@@ -8,11 +8,19 @@ import { AuthModule } from './auth/auth.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { LocalProvidersModule } from './local-providers/local-providers.module';
+import { JwtModule } from '@nestjs/jwt';
+import { MailerModule } from './mailer/mailer.module';
+import { MailModule } from './mail/mail.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       envFilePath: '.env',
+    }),
+    JwtModule.register({
+      global: true,
+      secret: 'secret',
+      signOptions: { expiresIn: '60s' },
     }),
     TypeOrmModule.forRoot({
       type: 'postgres',
@@ -22,6 +30,7 @@ import { LocalProvidersModule } from './local-providers/local-providers.module';
       password: process.env.POSTGRES_PASSWORD,
       database: process.env.POSTGRES_DB,
       entities: ['dist/**/*.entity{.ts,.js}'],
+      logging: true,
       synchronize: true,
     }),
     GraphQLModule.forRoot<ApolloDriverConfig>({
@@ -34,6 +43,8 @@ import { LocalProvidersModule } from './local-providers/local-providers.module';
     UsersModule,
     AuthModule,
     LocalProvidersModule,
+    MailerModule,
+    MailModule,
   ],
 })
 export class AppModule {}

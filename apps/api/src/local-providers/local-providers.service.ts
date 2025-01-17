@@ -4,6 +4,7 @@ import { UpdateLocalProviderInput } from './dto/update-local-provider.input';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { LocalProvider } from './entities/local-provider.entity';
+import { User } from 'src/users/entities/user.entity';
 
 @Injectable()
 export class LocalProvidersService {
@@ -29,5 +30,17 @@ export class LocalProvidersService {
 
   remove(id: string) {
     return this.localProvidersRepository.delete(id);
+  }
+
+  async findLocalProviderByUserId(userId: string): Promise<LocalProvider> {
+    return this.localProvidersRepository.findOne({
+      where: { user: { id: userId } },
+    });
+  }
+  async findUserByLocalProviderId(localProviderId: string): Promise<User> {
+    const localProvider = await this.localProvidersRepository.findOne({
+      where: { id: localProviderId },
+    });
+    return localProvider.user;
   }
 }
