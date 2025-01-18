@@ -3,6 +3,7 @@ import { SignInInput } from './dtos/sign-in.input';
 import { SignUpInput } from './dtos/sign-up.input';
 import { AuthService } from './auth.service';
 import { TokensResponse } from './dtos/tokens-response.dto';
+import { RequestResetPasswordResponse } from './dtos/request-reset-password-response.dto';
 
 @Resolver()
 export class AuthResolver {
@@ -20,5 +21,12 @@ export class AuthResolver {
     @Args('signUpInput') signUpInput: SignUpInput,
   ): Promise<TokensResponse> {
     return await this.authService.signUp(signUpInput);
+  }
+
+  @Mutation(() => RequestResetPasswordResponse)
+  async requestPasswordReset(
+    @Args('email') email: string,
+  ): Promise<RequestResetPasswordResponse> {
+    return await this.authService.requestPasswordReset(email);
   }
 }

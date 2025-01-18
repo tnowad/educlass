@@ -1,4 +1,8 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+} from '@nestjs/common';
 import { UsersService } from 'src/users/users.service';
 import { SignInInput } from './dtos/sign-in.input';
 import { SignUpInput } from './dtos/sign-up.input';
@@ -7,6 +11,8 @@ import { hashSync, compareSync } from 'bcryptjs';
 import { JwtService } from '@nestjs/jwt';
 import { TokensResponse } from './dtos/tokens-response.dto';
 import { MailService } from 'src/mail/mail.service';
+import { RequestResetPasswordResponse } from './dtos/request-reset-password-response.dto';
+import { createHash, randomBytes } from 'crypto';
 
 @Injectable()
 export class AuthService {
@@ -73,6 +79,34 @@ export class AuthService {
       refreshToken: this.jwtService.sign(payload, {
         expiresIn: '7d',
       }),
+    };
+  }
+
+  async requestPasswordReset(
+    email: string,
+  ): Promise<RequestResetPasswordResponse> {
+    // TODO: Implement CAPTCHA and rate limit
+    const user = await this.userService.findOneByEmail(email);
+
+    if (!user) {
+      throw new BadRequestException('User not found');
+    }
+
+    const hashedToken = createHash('sha256')
+      .update(randomBytes(32))
+      .digest('hex');
+
+    // TODO: Store hashedToken in Redis with expiration time of 15 minutes
+    await this.mailService.userResetPassword({
+      to: user.email,
+      data: {
+        hash: hashedToken,
+      },
+    });
+
+    return {
+      success: true,
+      message: 'Reset password email sent',
     };
   }
 }
