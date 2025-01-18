@@ -43,4 +43,8 @@ export class LocalProvidersService {
     });
     return localProvider.user;
   }
+
+  async save(localProvider: LocalProvider) {
+    return this.localProvidersRepository.save(localProvider);
+  }
 }

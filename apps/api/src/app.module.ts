@@ -20,6 +20,8 @@ import { CacheModule } from '@nestjs/cache-manager';
     }),
     CacheModule.register({
       isGlobal: true,
+      ttl: 60,
+      max: 10,
     }),
     JwtModule.register({
       global: true,

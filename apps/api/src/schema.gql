@@ -31,6 +31,7 @@ type Mutation {
   removeLocalProvider(id: String!): LocalProvider!
   removeUser(id: String!): User!
   requestPasswordReset(email: String!): RequestResetPasswordResponse!
+  resetPassword(resetPasswordInput: ResetPasswordInput!): ResetPasswordResponse!
   signIn(signInInput: SignInInput!): TokensResponse!
   signUp(signUpInput: SignUpInput!): TokensResponse!
   updateLocalProvider(updateLocalProviderInput: UpdateLocalProviderInput!): LocalProvider!
@@ -45,6 +46,16 @@ type Query {
 }
 
 type RequestResetPasswordResponse {
+  message: String!
+  success: Boolean!
+}
+
+input ResetPasswordInput {
+  password: String!
+  token: String!
+}
+
+type ResetPasswordResponse {
   message: String!
   success: Boolean!
 }
