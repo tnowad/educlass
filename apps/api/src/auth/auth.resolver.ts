@@ -2,40 +2,38 @@ import { Args, Mutation, Resolver } from '@nestjs/graphql';
 import { SignInInput } from './dtos/sign-in.input';
 import { SignUpInput } from './dtos/sign-up.input';
 import { AuthService } from './auth.service';
-import { TokensResponse } from './dtos/tokens-response.dto';
-import { RequestResetPasswordResponse } from './dtos/request-reset-password-response.dto';
+import { TokensResult } from './dtos/tokens.result';
+import { RequestResetPasswordResult } from './dtos/request-reset-password.result';
 import { ResetPasswordInput } from './dtos/reset-password.input';
-import { ResetPasswordResponse } from './dtos/reset-password-response.dto';
+import { ResetPasswordResult } from './dtos/reset-password.result';
 
 @Resolver()
 export class AuthResolver {
   constructor(private authService: AuthService) {}
 
-  @Mutation(() => TokensResponse)
-  signIn(
-    @Args('signInInput') signInInput: SignInInput,
-  ): Promise<TokensResponse> {
+  @Mutation(() => TokensResult)
+  signIn(@Args('signInInput') signInInput: SignInInput): Promise<TokensResult> {
     return this.authService.signIn(signInInput);
   }
 
-  @Mutation(() => TokensResponse)
+  @Mutation(() => TokensResult)
   async signUp(
     @Args('signUpInput') signUpInput: SignUpInput,
-  ): Promise<TokensResponse> {
+  ): Promise<TokensResult> {
     return await this.authService.signUp(signUpInput);
   }
 
-  @Mutation(() => RequestResetPasswordResponse)
+  @Mutation(() => RequestResetPasswordResult)
   async requestPasswordReset(
     @Args('email') email: string,
-  ): Promise<RequestResetPasswordResponse> {
+  ): Promise<RequestResetPasswordResult> {
     return await this.authService.requestPasswordReset(email);
   }
 
-  @Mutation(() => ResetPasswordResponse)
+  @Mutation(() => ResetPasswordResult)
   async resetPassword(
     @Args('resetPasswordInput') resetPasswordInput: ResetPasswordInput,
-  ): Promise<ResetPasswordResponse> {
+  ): Promise<ResetPasswordResult> {
     return await this.authService.resetPassword(resetPasswordInput);
   }
 }

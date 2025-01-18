@@ -1,10 +1,10 @@
 import { Field, ObjectType } from '@nestjs/graphql';
 
 @ObjectType()
-export class ResetPasswordResponse {
-  @Field()
+export class ActionResult {
+  @Field(() => Boolean)
   success: boolean;
 
-  @Field()
+  @Field(() => String, { nullable: true })
   message: string;
 }

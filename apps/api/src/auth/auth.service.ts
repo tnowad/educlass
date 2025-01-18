@@ -10,13 +10,13 @@ import { SignUpInput } from './dtos/sign-up.input';
 import { LocalProvidersService } from 'src/local-providers/local-providers.service';
 import { hashSync, compareSync } from 'bcryptjs';
 import { JwtService } from '@nestjs/jwt';
-import { TokensResponse } from './dtos/tokens-response.dto';
+import { TokensResult } from './dtos/tokens.result';
 import { MailService } from 'src/mail/mail.service';
-import { RequestResetPasswordResponse } from './dtos/request-reset-password-response.dto';
+import { RequestResetPasswordResult } from './dtos/request-reset-password.result';
 import { randomUUID } from 'crypto';
 import { Cache, CACHE_MANAGER } from '@nestjs/cache-manager';
 import { ResetPasswordInput } from './dtos/reset-password.input';
-import { ResetPasswordResponse } from './dtos/reset-password-response.dto';
+import { ResetPasswordResult } from './dtos/reset-password.result';
 
 @Injectable()
 export class AuthService {
@@ -28,7 +28,7 @@ export class AuthService {
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {}
 
-  async signIn(signInInput: SignInInput): Promise<TokensResponse> {
+  async signIn(signInInput: SignInInput): Promise<TokensResult> {
     const user = await this.userService.findOneByEmail(signInInput.email);
     if (!user) {
       throw new ForbiddenException('User not found');
@@ -52,7 +52,7 @@ export class AuthService {
     };
   }
 
-  async signUp(signUpInput: SignUpInput): Promise<TokensResponse> {
+  async signUp(signUpInput: SignUpInput): Promise<TokensResult> {
     if (await this.userService.findOneByEmail(signUpInput.email)) {
       throw new ForbiddenException('Email already exists');
     }
@@ -89,7 +89,7 @@ export class AuthService {
 
   async requestPasswordReset(
     email: string,
-  ): Promise<RequestResetPasswordResponse> {
+  ): Promise<RequestResetPasswordResult> {
     // TODO: Implement CAPTCHA and rate limit
     const user = await this.userService.findOneByEmail(email);
 
@@ -117,7 +117,7 @@ export class AuthService {
 
   async resetPassword(
     resetPasswordInput: ResetPasswordInput,
-  ): Promise<ResetPasswordResponse> {
+  ): Promise<ResetPasswordResult> {
     const { token, password } = resetPasswordInput;
     const userId = await this.cacheManager.get<string | null>(token);
 
