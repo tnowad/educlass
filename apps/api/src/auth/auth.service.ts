@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   ForbiddenException,
+  Inject,
   Injectable,
 } from '@nestjs/common';
 import { UsersService } from 'src/users/users.service';
@@ -13,6 +14,7 @@ import { TokensResponse } from './dtos/tokens-response.dto';
 import { MailService } from 'src/mail/mail.service';
 import { RequestResetPasswordResponse } from './dtos/request-reset-password-response.dto';
 import { createHash, randomBytes } from 'crypto';
+import { Cache, CACHE_MANAGER } from '@nestjs/cache-manager';
 
 @Injectable()
 export class AuthService {
@@ -21,6 +23,7 @@ export class AuthService {
     private localProvidersService: LocalProvidersService,
     private jwtService: JwtService,
     private mailService: MailService,
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {}
 
   async signIn(signInInput: SignInInput): Promise<TokensResponse> {
@@ -96,7 +99,8 @@ export class AuthService {
       .update(randomBytes(32))
       .digest('hex');
 
-    // TODO: Store hashedToken in Redis with expiration time of 15 minutes
+    await this.cacheManager.set(hashedToken, user.id, 900);
+
     await this.mailService.userResetPassword({
       to: user.email,
       data: {

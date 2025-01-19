@@ -11,11 +11,15 @@ import { LocalProvidersModule } from './local-providers/local-providers.module';
 import { JwtModule } from '@nestjs/jwt';
 import { MailerModule } from './mailer/mailer.module';
 import { MailModule } from './mail/mail.module';
+import { CacheModule } from '@nestjs/cache-manager';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       envFilePath: '.env',
+    }),
+    CacheModule.register({
+      isGlobal: true,
     }),
     JwtModule.register({
       global: true,
