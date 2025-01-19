@@ -17,6 +17,7 @@ import { randomUUID } from 'crypto';
 import { Cache, CACHE_MANAGER } from '@nestjs/cache-manager';
 import { ResetPasswordInput } from './dtos/reset-password.input';
 import { ResetPasswordResult } from './dtos/reset-password.result';
+import { RequestResetPasswordInput } from './dtos/request-reset-password.input';
 
 @Injectable()
 export class AuthService {
@@ -88,8 +89,9 @@ export class AuthService {
   }
 
   async requestPasswordReset(
-    email: string,
+    requestResetPasswordInput: RequestResetPasswordInput,
   ): Promise<RequestResetPasswordResult> {
+    const { email } = requestResetPasswordInput;
     // TODO: Implement CAPTCHA and rate limit
     const user = await this.userService.findOneByEmail(email);
 

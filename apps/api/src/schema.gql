@@ -30,7 +30,7 @@ type Mutation {
   createUser(createUserInput: CreateUserInput!): User!
   removeLocalProvider(id: String!): LocalProvider!
   removeUser(id: String!): User!
-  requestPasswordReset(email: String!): RequestResetPasswordResult!
+  requestPasswordReset(requestResetPasswordInput: RequestResetPasswordInput!): RequestResetPasswordResult!
   resetPassword(resetPasswordInput: ResetPasswordInput!): ResetPasswordResult!
   signIn(signInInput: SignInInput!): TokensResult!
   signUp(signUpInput: SignUpInput!): TokensResult!
@@ -43,6 +43,10 @@ type Query {
   localProviders: [LocalProvider!]!
   user(id: String!): User!
   users: [User!]!
+}
+
+input RequestResetPasswordInput {
+  email: String!
 }
 
 type RequestResetPasswordResult {

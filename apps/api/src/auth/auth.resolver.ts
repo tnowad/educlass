@@ -6,6 +6,7 @@ import { TokensResult } from './dtos/tokens.result';
 import { RequestResetPasswordResult } from './dtos/request-reset-password.result';
 import { ResetPasswordInput } from './dtos/reset-password.input';
 import { ResetPasswordResult } from './dtos/reset-password.result';
+import { RequestResetPasswordInput } from './dtos/request-reset-password.input';
 
 @Resolver()
 export class AuthResolver {
@@ -25,9 +26,12 @@ export class AuthResolver {
 
   @Mutation(() => RequestResetPasswordResult)
   async requestPasswordReset(
-    @Args('email') email: string,
+    @Args('requestResetPasswordInput')
+    requestResetPasswordInput: RequestResetPasswordInput,
   ): Promise<RequestResetPasswordResult> {
-    return await this.authService.requestPasswordReset(email);
+    return await this.authService.requestPasswordReset(
+      requestResetPasswordInput,
+    );
   }
 
   @Mutation(() => ResetPasswordResult)
