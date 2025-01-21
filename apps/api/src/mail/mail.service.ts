@@ -23,4 +23,21 @@ export class MailService {
       },
     });
   }
+
+  async userResetPassword(mailData: MailData<{ hash: string }>): Promise<void> {
+    const url = new URL('http://localhost:3000/auth/reset-password');
+    url.searchParams.append('hash', mailData.data.hash);
+
+    await this.mailerService.sendMail({
+      to: mailData.to,
+      subject: 'Reset your password',
+      templatePath: join('src', 'mail', 'templates', 'user-reset-password.hbs'),
+      context: {
+        title: 'Reset your password',
+        url: url.toString(),
+        action: 'Reset',
+        appName: process.env.APP_NAME,
+      },
+    });
+  }
 }
