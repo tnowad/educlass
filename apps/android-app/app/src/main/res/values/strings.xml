@@ -22,5 +22,4 @@
     <string name="text_logout">Logout</string>
     <string name="hint_confirm_password">Confirm password</string>
     <string name="text_sign_up">SignUp</string>
-
 </resources>
