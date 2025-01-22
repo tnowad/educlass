@@ -1,4 +1,8 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { UsersService } from 'src/users/users.service';
 import { SignInInput } from './dtos/sign-in.input';
 import { SignUpInput } from './dtos/sign-up.input';
@@ -74,5 +78,22 @@ export class AuthService {
         expiresIn: '7d',
       }),
     };
+  }
+
+  async validateUser(token: string): Promise<any> {
+    try {
+      const payload = this.jwtService.verify(token);
+      const userId = payload.sub;
+
+      const user = await this.userService.findOne(userId);
+
+      if (!user) {
+        throw new UnauthorizedException('Người dùng không tồn tại');
+      }
+
+      return user;
+    } catch (e) {
+      throw new UnauthorizedException(e);
+    }
   }
 }
