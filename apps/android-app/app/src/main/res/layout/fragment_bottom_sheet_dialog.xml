@@ -18,7 +18,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@android:color/transparent"
-            android:text="Tham gia lớp học"
+            android:text="@string/text_join_class"
             android:textColor="@color/white"
             android:textStyle="bold"
             />
@@ -30,7 +30,7 @@
             android:background="@android:color/transparent"
             android:textStyle="bold"
             android:textColor="@color/white"
-            android:text="Tạo lớp học" />
+            android:text="@string/text_create_a_class" />
 
     </LinearLayout>
 
