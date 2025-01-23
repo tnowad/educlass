@@ -1,21 +1,21 @@
 package com.edusuite.educlass.model;
 
 public class Course {
-    private int id;
+    private String id;
     private String name;
     private String subtitle;
 
-    public Course(int id, String name, String subtitle) {
+    public Course(String id, String name, String subtitle) {
         this.id = id;
         this.name = name;
         this.subtitle = subtitle;
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 
