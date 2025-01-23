@@ -5,7 +5,7 @@
     android:orientation="horizontal"
     android:padding="8dp"
     android:gravity="center"
-    android:background="@drawable/item_course_background"
+    android:background="@drawable/bg_item_course"
     android:layout_marginBottom="8dp"
     >
 
