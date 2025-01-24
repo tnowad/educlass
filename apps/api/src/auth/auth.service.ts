@@ -11,6 +11,8 @@ import { hashSync, compareSync } from 'bcryptjs';
 import { JwtService } from '@nestjs/jwt';
 import { TokensResponse } from './dtos/tokens-response.dto';
 import { MailService } from 'src/mail/mail.service';
+import { User } from 'src/users/entities/user.entity';
+import { JwtPayload } from './dtos/jwt-payload';
 
 @Injectable()
 export class AuthService {
@@ -80,20 +82,21 @@ export class AuthService {
     };
   }
 
-  async validateUser(token: string): Promise<any> {
+  async validateUser(token: string): Promise<User> {
     try {
-      const payload = this.jwtService.verify(token);
-      const userId = payload.sub;
+      const payload = this.jwtService.verify<JwtPayload>(token);
+      if (!payload || !payload.sub) {
+        throw new UnauthorizedException('Invalid token payload');
+      }
 
-      const user = await this.userService.findOne(userId);
-
+      const user = await this.userService.findOne(payload.sub);
       if (!user) {
-        throw new UnauthorizedException('Người dùng không tồn tại');
+        throw new UnauthorizedException('User not found');
       }
 
       return user;
-    } catch (e) {
-      throw new UnauthorizedException(e);
+    } catch (error) {
+      throw new UnauthorizedException(error);
     }
   }
 }
