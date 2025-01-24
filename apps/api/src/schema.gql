@@ -28,7 +28,7 @@ type LocalProvider {
 type Mutation {
   createLocalProvider(createLocalProviderInput: CreateLocalProviderInput!): LocalProvider!
   createUser(createUserInput: CreateUserInput!): User!
-  getUserByToken: User!
+  getCurrentUser: User!
   removeLocalProvider(id: String!): LocalProvider!
   removeUser(id: String!): User!
   signIn(signInInput: SignInInput!): TokensResponse!
