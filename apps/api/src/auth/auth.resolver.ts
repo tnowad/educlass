@@ -1,4 +1,4 @@
-import { Args, Context, Mutation, Resolver } from '@nestjs/graphql';
+import { Args, Mutation, Resolver } from '@nestjs/graphql';
 import { SignInInput } from './dtos/sign-in.input';
 import { SignUpInput } from './dtos/sign-up.input';
 import { AuthService } from './auth.service';
@@ -6,10 +6,15 @@ import { TokensResponse } from './dtos/tokens-response.dto';
 import { UseGuards } from '@nestjs/common';
 import { GqlAuthGuard } from './graphql-auth.guard';
 import { User } from 'src/users/entities/user.entity';
+import { CurrentUser } from './decorators/user.decorator';
+import { UsersService } from 'src/users/users.service';
 
 @Resolver()
 export class AuthResolver {
-  constructor(private authService: AuthService) {}
+  constructor(
+    private authService: AuthService,
+    private usersService: UsersService,
+  ) {}
 
   @Mutation(() => TokensResponse)
   signIn(
@@ -27,12 +32,7 @@ export class AuthResolver {
 
   @Mutation(() => User)
   @UseGuards(GqlAuthGuard)
-  async getUserByToken(@Context('req') req: any): Promise<User> {
-    const token = req.headers.authorization?.split(' ')[1];
-    if (!token) {
-      throw new Error('Token không được cung cấp');
-    }
-
-    return await this.authService.validateUser(token);
+  async getCurrentUser(@CurrentUser() user: User): Promise<User> {
+    return this.usersService.findOne(user.id);
   }
 }
