@@ -1,5 +1,7 @@
 import {
+  BadRequestException,
   ForbiddenException,
+  Inject,
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -9,10 +11,16 @@ import { SignUpInput } from './dtos/sign-up.input';
 import { LocalProvidersService } from 'src/local-providers/local-providers.service';
 import { hashSync, compareSync } from 'bcryptjs';
 import { JwtService } from '@nestjs/jwt';
-import { TokensResponse } from './dtos/tokens-response.dto';
+import { TokensResult } from './dtos/tokens.result';
 import { MailService } from 'src/mail/mail.service';
 import { User } from 'src/users/entities/user.entity';
 import { JwtPayload } from './dtos/jwt-payload';
+import { RequestResetPasswordResult } from './dtos/request-reset-password.result';
+import { randomUUID } from 'crypto';
+import { Cache, CACHE_MANAGER } from '@nestjs/cache-manager';
+import { ResetPasswordInput } from './dtos/reset-password.input';
+import { ResetPasswordResult } from './dtos/reset-password.result';
+import { RequestResetPasswordInput } from './dtos/request-reset-password.input';
 
 @Injectable()
 export class AuthService {
@@ -21,9 +29,10 @@ export class AuthService {
     private localProvidersService: LocalProvidersService,
     private jwtService: JwtService,
     private mailService: MailService,
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {}
 
-  async signIn(signInInput: SignInInput): Promise<TokensResponse> {
+  async signIn(signInInput: SignInInput): Promise<TokensResult> {
     const user = await this.userService.findOneByEmail(signInInput.email);
     if (!user) {
       throw new ForbiddenException('User not found');
@@ -47,7 +56,7 @@ export class AuthService {
     };
   }
 
-  async signUp(signUpInput: SignUpInput): Promise<TokensResponse> {
+  async signUp(signUpInput: SignUpInput): Promise<TokensResult> {
     if (await this.userService.findOneByEmail(signUpInput.email)) {
       throw new ForbiddenException('Email already exists');
     }
@@ -98,5 +107,60 @@ export class AuthService {
     } catch (error) {
       throw new UnauthorizedException(error);
     }
+  }
+
+  async requestPasswordReset(
+    requestResetPasswordInput: RequestResetPasswordInput,
+  ): Promise<RequestResetPasswordResult> {
+    const { email } = requestResetPasswordInput;
+    const user = await this.userService.findOneByEmail(email);
+
+    if (!user) {
+      throw new BadRequestException('User not found');
+    }
+
+    const token = randomUUID();
+
+    // TODO: Change the expiration time lower than 60 seconds
+    await this.cacheManager.set(token, user.id, 60);
+
+    await this.mailService.userResetPassword({
+      to: user.email,
+      data: {
+        hash: token,
+      },
+    });
+
+    return {
+      success: true,
+      message: 'Reset password email sent',
+    };
+  }
+
+  async resetPassword(
+    resetPasswordInput: ResetPasswordInput,
+  ): Promise<ResetPasswordResult> {
+    const { token, password } = resetPasswordInput;
+    const userId = await this.cacheManager.get<string | null>(token);
+
+    if (!userId) {
+      throw new BadRequestException('Invalid token');
+    }
+
+    const localProvider =
+      await this.localProvidersService.findLocalProviderByUserId(userId);
+
+    if (!localProvider) {
+      throw new BadRequestException('Local provider not found');
+    }
+
+    localProvider.password = hashSync(password);
+
+    await this.localProvidersService.save(localProvider);
+
+    return {
+      message: 'Password reset successfully',
+      success: true,
+    };
   }
 }
