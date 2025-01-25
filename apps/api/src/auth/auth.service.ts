@@ -3,6 +3,7 @@ import {
   ForbiddenException,
   Inject,
   Injectable,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { UsersService } from 'src/users/users.service';
 import { SignInInput } from './dtos/sign-in.input';
@@ -12,6 +13,8 @@ import { hashSync, compareSync } from 'bcryptjs';
 import { JwtService } from '@nestjs/jwt';
 import { TokensResult } from './dtos/tokens.result';
 import { MailService } from 'src/mail/mail.service';
+import { User } from 'src/users/entities/user.entity';
+import { JwtPayload } from './dtos/jwt-payload';
 import { RequestResetPasswordResult } from './dtos/request-reset-password.result';
 import { randomUUID } from 'crypto';
 import { Cache, CACHE_MANAGER } from '@nestjs/cache-manager';
@@ -88,11 +91,28 @@ export class AuthService {
     };
   }
 
+  async validateUser(token: string): Promise<User> {
+    try {
+      const payload = this.jwtService.verify<JwtPayload>(token);
+      if (!payload || !payload.sub) {
+        throw new UnauthorizedException('Invalid token payload');
+      }
+
+      const user = await this.userService.findOne(payload.sub);
+      if (!user) {
+        throw new UnauthorizedException('User not found');
+      }
+
+      return user;
+    } catch (error) {
+      throw new UnauthorizedException(error);
+    }
+  }
+
   async requestPasswordReset(
     requestResetPasswordInput: RequestResetPasswordInput,
   ): Promise<RequestResetPasswordResult> {
     const { email } = requestResetPasswordInput;
-    // TODO: Implement CAPTCHA and rate limit
     const user = await this.userService.findOneByEmail(email);
 
     if (!user) {
@@ -131,9 +151,6 @@ export class AuthService {
       await this.localProvidersService.findLocalProviderByUserId(userId);
 
     if (!localProvider) {
-      // TODO: This will happen if the user signed up with a different provider
-      // than local, to handle this case we need to implement a way to reset
-      // the password for other providers
       throw new BadRequestException('Local provider not found');
     }
 
