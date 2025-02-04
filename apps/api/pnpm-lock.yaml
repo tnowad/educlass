@@ -62,6 +62,9 @@ importers:
       handlebars:
         specifier: ^4.7.8
         version: 4.7.8
+      minio:
+        specifier: ^8.0.4
+        version: 8.0.4
       nestjs-minio:
         specifier: ^2.6.2
         version: 2.6.2(@nestjs/common@10.4.15(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/core@10.4.15)
@@ -2567,8 +2570,8 @@ packages:
   minimist@1.2.8:
     resolution: {integrity: sha512-2yyAR8qBkN3YuheJanUpWC5U3bb5osDywNB8RzDVlDwDHbocAJveqqj1u8+SVD7jkWT4yvsHCpWqqWqAxb0zCA==}
 
-  minio@8.0.3:
-    resolution: {integrity: sha512-+FIYQ+HZ5GrBjEmIYienRgEikqaTWAflXIV5lJOtUzfYxn3NvjQx7BsJSORXExlqgzWxKTWsqkyk2wiyFjs9/w==}
+  minio@8.0.4:
+    resolution: {integrity: sha512-GVW7y2PNbzjjFJ9opVMGKvDNuRkyz3bMt1q7UrHs7bsKFWLXbSvMPffjE/HkVYWUjlD8kQwMaeqiHhhvZJJOfQ==}
     engines: {node: ^16 || ^18 || >=20}
 
   minipass@7.1.2:
@@ -6569,7 +6572,7 @@ snapshots:
 
   minimist@1.2.8: {}
 
-  minio@8.0.3:
+  minio@8.0.4:
     dependencies:
       async: 3.2.6
       block-stream2: 2.1.0
@@ -6628,7 +6631,7 @@ snapshots:
     dependencies:
       '@nestjs/common': 10.4.15(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1)
       '@nestjs/core': 10.4.15(@nestjs/common@10.4.15(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/platform-express@10.4.15)(reflect-metadata@0.2.2)(rxjs@7.8.1)
-      minio: 8.0.3
+      minio: 8.0.4
 
   node-abort-controller@3.1.1: {}
 
