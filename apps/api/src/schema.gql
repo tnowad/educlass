@@ -18,11 +18,14 @@ A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date
 scalar DateTime
 
 type File {
+  createdAt: DateTime!
   filename: String!
   id: String!
   mimetype: String
   objectName: String!
+  updatedAt: DateTime!
   url: String
+  user: User
 }
 
 type LocalProvider {
@@ -110,6 +113,7 @@ input UploadFileInput {
 }
 
 type User {
+  avatar: File
   createdAt: DateTime!
   email: String!
   emailVerified: Boolean!

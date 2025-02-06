@@ -1,5 +1,13 @@
 import { ObjectType, Field } from '@nestjs/graphql';
-import { Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { User } from 'src/users/entities/user.entity';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  OneToOne,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 
 @ObjectType()
 @Entity({
@@ -11,14 +19,31 @@ export class File {
   id: string;
 
   @Field()
+  @Column({ type: 'varchar', length: 255 })
+  objectName: string;
+
+  @Field()
+  @Column({ type: 'varchar', length: 255 })
   filename: string;
 
   @Field({ nullable: true })
+  @Column({ type: 'varchar', length: 255, nullable: true })
   mimetype: string;
 
   @Field()
-  objectName: string;
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @Field()
+  @UpdateDateColumn()
+  updatedAt: Date;
 
   @Field({ nullable: true })
   url: string;
+
+  @Field(() => User, { nullable: true })
+  @OneToOne(() => User, (user) => user.avatar, {
+    onDelete: 'CASCADE',
+  })
+  user: User;
 }

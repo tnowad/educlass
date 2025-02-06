@@ -1,4 +1,5 @@
 import { ObjectType, Field } from '@nestjs/graphql';
+import { File } from 'src/files/entities/file.entity';
 import { LocalProvider } from 'src/local-providers/entities/local-provider.entity';
 import {
   Column,
@@ -52,4 +53,16 @@ export class User {
     foreignKeyConstraintName: 'FK_localProvider_user',
   })
   localProvider: LocalProvider;
+
+  @Field(() => File, { nullable: true })
+  @OneToOne(() => File, (file) => file.user, {
+    cascade: true,
+    nullable: true,
+  })
+  @JoinColumn({
+    name: 'avatarId',
+    referencedColumnName: 'id',
+    foreignKeyConstraintName: 'FK_avatar_user',
+  })
+  avatar: File;
 }
