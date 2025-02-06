@@ -13,6 +13,7 @@ import { MailerModule } from './mailer/mailer.module';
 import { MailModule } from './mail/mail.module';
 import { CacheModule } from '@nestjs/cache-manager';
 import { NestMinioModule } from 'nestjs-minio';
+import { FilesModule } from './files/files.module';
 
 @Module({
   imports: [
@@ -60,6 +61,7 @@ import { NestMinioModule } from 'nestjs-minio';
     LocalProvidersModule,
     MailerModule,
     MailModule,
+    FilesModule,
   ],
 })
 export class AppModule {}
