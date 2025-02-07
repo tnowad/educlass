@@ -19,7 +19,7 @@ export class File {
   id: string;
 
   @Field()
-  @Column({ type: 'varchar', length: 255 })
+  @Column({ name: 'object_name', type: 'varchar', length: 255 })
   objectName: string;
 
   @Field()
@@ -31,11 +31,11 @@ export class File {
   mimetype: string;
 
   @Field()
-  @CreateDateColumn()
+  @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 
   @Field()
-  @UpdateDateColumn()
+  @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
 
   @Field({ nullable: true })
