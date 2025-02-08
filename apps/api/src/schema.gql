@@ -46,6 +46,7 @@ type Mutation {
   resetPassword(resetPasswordInput: ResetPasswordInput!): ResetPasswordResult!
   signIn(signInInput: SignInInput!): TokensResult!
   signUp(signUpInput: SignUpInput!): TokensResult!
+  updateAvatar(updateAvatarInput: UpdateAvatarInput!): User!
   updateLocalProvider(updateLocalProviderInput: UpdateLocalProviderInput!): LocalProvider!
   updateUser(updateUserInput: UpdateUserInput!): User!
   uploadFile(uploadFileInput: UploadFileInput!): File!
@@ -91,6 +92,10 @@ input SignUpInput {
 type TokensResult {
   accessToken: String!
   refreshToken: String!
+}
+
+input UpdateAvatarInput {
+  avatar: Upload
 }
 
 input UpdateLocalProviderInput {
