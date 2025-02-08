@@ -13,8 +13,8 @@ export class FilesService {
     @InjectRepository(File) private readonly filesRepository: Repository<File>,
   ) {}
 
-  async uploadFile(file: FileUpload): Promise<File> {
-    const { createReadStream, filename, mimetype } = file;
+  async uploadFile(file: Promise<FileUpload>): Promise<File> {
+    const { createReadStream, filename, mimetype } = await file;
     const stream = createReadStream();
     const objectName = `${Date.now()}-${filename}`;
     await this.minioClient.putObject(

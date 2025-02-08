@@ -8,11 +8,7 @@ export class FilesResolver {
   constructor(private readonly filesService: FilesService) {}
 
   @Mutation(() => File)
-  async uploadFile(@Args('uploadFileInput') uploadFileInput: UploadFileInput) {
-    const file = await uploadFileInput.file;
-    if (!file) {
-      throw new Error('File not provided');
-    }
-    return this.filesService.uploadFile(file);
+  uploadFile(@Args('uploadFileInput') uploadFileInput: UploadFileInput) {
+    return this.filesService.uploadFile(uploadFileInput.file);
   }
 }
