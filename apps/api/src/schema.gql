@@ -2,6 +2,16 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+type Assignment {
+  createdAt: DateTime!
+  description: String!
+  dueDate: DateTime
+  id: String!
+  startDate: DateTime
+  title: String!
+  updatedAt: DateTime!
+}
+
 type Course {
   code: String!
   createdAt: DateTime!
@@ -12,6 +22,13 @@ type Course {
   section: String
   subject: String
   updatedAt: DateTime!
+}
+
+input CreateAssignmentInput {
+  description: String!
+  dueDate: DateTime!
+  startDate: DateTime!
+  title: String!
 }
 
 input CreateCourseInput {
@@ -56,10 +73,12 @@ type LocalProvider {
 }
 
 type Mutation {
+  createAssignment(createAssignmentInput: CreateAssignmentInput!): Assignment!
   createCourse(createCourseInput: CreateCourseInput!): Course!
   createLocalProvider(createLocalProviderInput: CreateLocalProviderInput!): LocalProvider!
   createUser(createUserInput: CreateUserInput!): User!
   getCurrentUser: User!
+  removeAssignment(id: String!): Assignment!
   removeCourse(id: String!): Course!
   removeLocalProvider(id: String!): LocalProvider!
   removeUser(id: String!): User!
@@ -67,6 +86,7 @@ type Mutation {
   resetPassword(resetPasswordInput: ResetPasswordInput!): ResetPasswordResult!
   signIn(signInInput: SignInInput!): TokensResult!
   signUp(signUpInput: SignUpInput!): TokensResult!
+  updateAssignment(updateAssignmentInput: UpdateAssignmentInput!): Assignment!
   updateAvatar(updateAvatarInput: UpdateAvatarInput!): User!
   updateCourse(updateCourseInput: UpdateCourseInput!): Course!
   updateLocalProvider(updateLocalProviderInput: UpdateLocalProviderInput!): LocalProvider!
@@ -77,6 +97,8 @@ type Mutation {
 type Query {
   Course(id: String!): Course!
   Courses: [Course!]!
+  assignment(id: String!): Assignment!
+  assignments: [Assignment!]!
   localProvider(id: String!): LocalProvider!
   localProviders: [LocalProvider!]!
   user(id: String!): User!
@@ -116,6 +138,14 @@ input SignUpInput {
 type TokensResult {
   accessToken: String!
   refreshToken: String!
+}
+
+input UpdateAssignmentInput {
+  description: String
+  dueDate: DateTime
+  id: String!
+  startDate: DateTime
+  title: String
 }
 
 input UpdateAvatarInput {
