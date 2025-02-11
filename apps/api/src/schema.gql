@@ -118,16 +118,16 @@ type TokensResult {
   refreshToken: String!
 }
 
+input UpdateAvatarInput {
+  avatar: Upload
+}
+
 input UpdateCourseInput {
   id: String!
   name: String
   room: String
   section: String
   subject: String
-}
-
-input UpdateAvatarInput {
-  avatar: Upload
 }
 
 input UpdateLocalProviderInput {
