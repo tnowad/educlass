@@ -6,12 +6,15 @@ import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
 import { LocalProvider } from 'src/local-providers/entities/local-provider.entity';
 import { LocalProvidersService } from 'src/local-providers/local-providers.service';
+import { UpdateAvatarInput } from './dto/update-avatar.input';
+import { FilesService } from 'src/files/files.service';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User) private usersRepository: Repository<User>,
     private readonly localProvidersService: LocalProvidersService,
+    private readonly filesServices: FilesService,
   ) {}
 
   create(createUserInput: CreateUserInput) {
@@ -22,7 +25,7 @@ export class UsersService {
     return this.usersRepository.find();
   }
 
-  findOne(id: string) {
+  findOne(id: string): Promise<User> {
     return this.usersRepository.findOne({ where: { id } });
   }
 
@@ -43,6 +46,17 @@ export class UsersService {
 
   remove(id: string) {
     return this.usersRepository.delete(id);
+  }
+
+  async updateAvatar(id: string, updateAvatarInput: UpdateAvatarInput) {
+    const user = await this.findOne(id);
+    const file = await this.filesServices.uploadFile(updateAvatarInput.avatar);
+
+    user.avatar = file;
+
+    await this.usersRepository.save(user);
+
+    return user;
   }
 
   async findLocalProviderByUserId(userId: string): Promise<LocalProvider> {
