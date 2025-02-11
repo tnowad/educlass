@@ -1,0 +1,24 @@
+type Course {
+  # Example field (placeholder)
+  exampleField: Int
+}
+
+input CreateCourseInput {
+  # Example field (placeholder)
+  exampleField: Int
+}
+
+input UpdateCourseInput {
+  id: Int!
+}
+
+type Query {
+  courses: [Course]!
+  course(id: Int!): Course
+}
+
+type Mutation {
+  createCourse(createCourseInput: CreateCourseInput!): Course!
+  updateCourse(updateCourseInput: UpdateCourseInput!): Course!
+  removeCourse(id: Int!): Course
+}

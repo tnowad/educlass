@@ -2,6 +2,25 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+type Course {
+  code: String!
+  createAt: DateTime!
+  id: String!
+  inviteLink: String!
+  name: String!
+  room: String
+  section: String
+  subject: String
+  updateAt: DateTime!
+}
+
+input CreateCourseInput {
+  name: String!
+  room: String
+  section: String
+  subject: String
+}
+
 input CreateLocalProviderInput {
   password: String!
 }
@@ -26,20 +45,25 @@ type LocalProvider {
 }
 
 type Mutation {
+  create(createCourseInput: CreateCourseInput!): Course!
   createLocalProvider(createLocalProviderInput: CreateLocalProviderInput!): LocalProvider!
   createUser(createUserInput: CreateUserInput!): User!
   getCurrentUser: User!
+  remove(id: String!): Course!
   removeLocalProvider(id: String!): LocalProvider!
   removeUser(id: String!): User!
   requestPasswordReset(requestResetPasswordInput: RequestResetPasswordInput!): RequestResetPasswordResult!
   resetPassword(resetPasswordInput: ResetPasswordInput!): ResetPasswordResult!
   signIn(signInInput: SignInInput!): TokensResult!
   signUp(signUpInput: SignUpInput!): TokensResult!
+  update(updateCourseInput: UpdateCourseInput!): Course!
   updateLocalProvider(updateLocalProviderInput: UpdateLocalProviderInput!): LocalProvider!
   updateUser(updateUserInput: UpdateUserInput!): User!
 }
 
 type Query {
+  Course(id: String!): Course!
+  Courses: [Course!]!
   localProvider(id: String!): LocalProvider!
   localProviders: [LocalProvider!]!
   user(id: String!): User!
@@ -79,6 +103,14 @@ input SignUpInput {
 type TokensResult {
   accessToken: String!
   refreshToken: String!
+}
+
+input UpdateCourseInput {
+  id: String!
+  name: String
+  room: String
+  section: String
+  subject: String
 }
 
 input UpdateLocalProviderInput {

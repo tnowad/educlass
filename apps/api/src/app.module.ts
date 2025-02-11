@@ -12,6 +12,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { MailerModule } from './mailer/mailer.module';
 import { MailModule } from './mail/mail.module';
 import { CacheModule } from '@nestjs/cache-manager';
+import { CoursesModule } from './courses/courses.module';
 
 @Module({
   imports: [
@@ -51,6 +52,7 @@ import { CacheModule } from '@nestjs/cache-manager';
     LocalProvidersModule,
     MailerModule,
     MailModule,
+    CoursesModule,
   ],
 })
 export class AppModule {}
