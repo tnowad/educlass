@@ -20,13 +20,13 @@ export class CoursesResolver {
 
   @Query(() => [Course], { name: 'Courses' })
   @UseGuards(GqlAuthGuard)
-  async findAllCourses() {
+  async findAll() {
     return this.coursesService.findAll();
   }
 
   @Query(() => Course, { name: 'Course' })
   @UseGuards(GqlAuthGuard)
-  async findOneCourse(@Args('id') id: string) {
+  async findOne(@Args('id') id: string) {
     return this.coursesService.findOne(id);
   }
 
