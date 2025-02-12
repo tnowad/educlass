@@ -1,0 +1,33 @@
+name: GitHub to Telegram Notification
+
+on:
+  # push:
+  pull_request:
+  issues:
+  release:
+  fork:
+  delete:
+  create:
+  workflow_run:
+    workflows: ["CI/CD Pipeline"]
+    types: 
+      - completed
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Send Telegram Notification
+        uses: appleboy/telegram-action@master
+        with:
+          to: "${{ secrets.TELEGRAM_CHAT_ID }}"
+          token: "${{ secrets.TELEGRAM_BOT_TOKEN }}"
+          message: |
+            🚀 *GitHub Event Notification* 🚀
+            🔹 Repository: [${{ github.repository }}](https://github.com/${{ github.repository }})
+            🔹 Event: *${{ github.event_name }}*
+            🔹 Actor: [${{ github.actor }}](https://github.com/${{ github.actor }})
+            🔹 Commit: [${{ github.sha }}](https://github.com/${{ github.repository }}/commit/${{ github.sha }})
