@@ -6,10 +6,6 @@ on:
   pull_request_review_comment:
   issues:
   issue_comment:
-  workflow_run:
-    workflows: ["CI/CD Pipeline"]
-    types: 
-      - completed
 
 jobs:
   notify:
@@ -25,15 +21,14 @@ jobs:
           to: "${{ secrets.TELEGRAM_CHAT_ID }}"
           token: "${{ secrets.TELEGRAM_BOT_TOKEN }}"
           message: |
-            🚀 *Pull Request Notification* 🚀
-            📌 *Repository:* [${{ github.repository }}](https://github.com/${{ github.repository }})
-            📢 *Action:* `${{ github.event.action }}`
-            🔀 *Pull Request:* [#${{ github.event.pull_request.number }}](${{ github.event.pull_request.html_url }})
-            ✍ *Title:* `${{ github.event.pull_request.title }}`
-            👤 *By:* [${{ github.event.pull_request.user.login }}](${{ github.event.pull_request.user.html_url }})
-            🔄 *Status:* `${{ github.event.pull_request.state }}`
-
-            🔗 *Diff:* [View Changes](${{ github.event.pull_request.html_url }}/files)
+            Hey everyone, there's an update in *${{ github.repository }}*!
+            
+            A pull request (PR #[${{ github.event.pull_request.number }}](${{ github.event.pull_request.html_url }})) has just been **${{ github.event.action }}**.
+            The title of the PR is: _"${{ github.event.pull_request.title }}"_ and it was opened by [${{ github.event.pull_request.user.login }}](${{ github.event.pull_request.user.html_url }}).
+            
+            The current status is **${{ github.event.pull_request.state }}**.
+            
+            Take a look at the changes here: [View Changes](${{ github.event.pull_request.html_url }}/files)
 
       - name: PR Review Notification
         if: github.event_name == 'pull_request_review'
@@ -42,15 +37,15 @@ jobs:
           to: "${{ secrets.TELEGRAM_CHAT_ID }}"
           token: "${{ secrets.TELEGRAM_BOT_TOKEN }}"
           message: |
-            🔍 *Pull Request Review* 🔍
-            📌 *Repository:* [${{ github.repository }}](https://github.com/${{ github.repository }})
-            📢 *Action:* `${{ github.event.action }}`
-            🔀 *Pull Request:* [#${{ github.event.pull_request.number }}](${{ github.event.pull_request.html_url }})
-            👤 *Reviewer:* [${{ github.event.review.user.login }}](${{ github.event.review.user.html_url }})
-            📝 *State:* `${{ github.event.review.state }}`
-            💬 *Comment:* `${{ github.event.review.body }}`
-
-            🔗 *View Review:* [Open Review](${{ github.event.review.html_url }})
+            Hi team, a review has just been submitted on PR #[${{ github.event.pull_request.number }}](${{ github.event.pull_request.html_url }}) in *${{ github.repository }}*.
+            
+            The review action is **${{ github.event.action }}**.
+            It was submitted by [${{ github.event.review.user.login }}](${{ github.event.review.user.html_url }}), and the review is marked as **${{ github.event.review.state }}**.
+            
+            Here's what was said:
+            > ${{ github.event.review.body }}
+            
+            You can check out the full review [here](${{ github.event.review.html_url }}).
 
       - name: PR Review Comment Notification
         if: github.event_name == 'pull_request_review_comment'
@@ -59,13 +54,14 @@ jobs:
           to: "${{ secrets.TELEGRAM_CHAT_ID }}"
           token: "${{ secrets.TELEGRAM_BOT_TOKEN }}"
           message: |
-            💬 *Pull Request Review Comment* 💬
-            📌 *Repository:* [${{ github.repository }}](https://github.com/${{ github.repository }})
-            🔀 *PR:* [#${{ github.event.pull_request.number }}](${{ github.event.pull_request.html_url }})
-            👤 *By:* [${{ github.event.comment.user.login }}](${{ github.event.comment.user.html_url }})
-            📝 *Comment:* `${{ github.event.comment.body }}`
-
-            🔗 *View Comment:* [Open Comment](${{ github.event.comment.html_url }})
+            Hey there! A new comment was added to a pull request review in *${{ github.repository }}*.
+            
+            Check out PR #[${{ github.event.pull_request.number }}](${{ github.event.pull_request.html_url }}).
+            The comment was posted by [${{ github.event.comment.user.login }}](${{ github.event.comment.user.html_url }}):
+            
+            > ${{ github.event.comment.body }}
+            
+            View the comment in detail [here](${{ github.event.comment.html_url }}).
 
       - name: Issue Notification
         if: github.event_name == 'issues'
@@ -74,15 +70,14 @@ jobs:
           to: "${{ secrets.TELEGRAM_CHAT_ID }}"
           token: "${{ secrets.TELEGRAM_BOT_TOKEN }}"
           message: |
-            📝 *Issue Notification* 📝
-            📌 *Repository:* [${{ github.repository }}](https://github.com/${{ github.repository }})
-            📢 *Action:* `${{ github.event.action }}`
-            🆕 *Issue:* [#${{ github.event.issue.number }}](${{ github.event.issue.html_url }})
-            ✍ *Title:* `${{ github.event.issue.title }}`
-            👤 *By:* [${{ github.event.issue.user.login }}](${{ github.event.issue.user.html_url }})
-            💬 *Comments:* `${{ github.event.issue.comments }}`
-
-            🔗 *View Issue:* [Open Issue](${{ github.event.issue.html_url }})
+            Hello team, there's a new update on an issue in *${{ github.repository }}*.
+            
+            The issue (#[${{ github.event.issue.number }}](${{ github.event.issue.html_url }})) has been **${{ github.event.action }}**.
+            Its title is: _"${{ github.event.issue.title }}"_ and it was opened by [${{ github.event.issue.user.login }}](${{ github.event.issue.user.html_url }}).
+            
+            It currently has **${{ github.event.issue.comments }}** comment(s).
+            
+            You can view the full details of the issue [here](${{ github.event.issue.html_url }}).
 
       - name: Issue Comment Notification
         if: github.event_name == 'issue_comment'
@@ -91,26 +86,11 @@ jobs:
           to: "${{ secrets.TELEGRAM_CHAT_ID }}"
           token: "${{ secrets.TELEGRAM_BOT_TOKEN }}"
           message: |
-            💬 *Issue Comment Notification* 💬
-            📌 *Repository:* [${{ github.repository }}](https://github.com/${{ github.repository }})
-            🆕 *Issue:* [#${{ github.event.issue.number }}](${{ github.event.issue.html_url }})
-            👤 *By:* [${{ github.event.comment.user.login }}](${{ github.event.comment.user.html_url }})
-            📝 *Comment:* `${{ github.event.comment.body }}`
-
-            🔗 *View Comment:* [Open Comment](${{ github.event.comment.html_url }})
-
-      - name: CI/CD Workflow Notification
-        if: github.event_name == 'workflow_run'
-        uses: appleboy/telegram-action@master
-        with:
-          to: "${{ secrets.TELEGRAM_CHAT_ID }}"
-          token: "${{ secrets.TELEGRAM_BOT_TOKEN }}"
-          message: |
-            🔄 *CI/CD Pipeline Completed* 🔄
-            📌 *Repository:* [${{ github.repository }}](https://github.com/${{ github.repository }})
-            🎯 *Workflow:* `"CI/CD Pipeline"`
-            ✅ *Status:* `${{ github.event.workflow_run.conclusion }}`
-            🕒 *Duration:* `${{ github.event.workflow_run.run_duration_ms }}ms`
-            👤 *Triggered by:* [${{ github.event.sender.login }}](${{ github.event.sender.html_url }})
-
-            🔗 *Run Details:* [View Run](${{ github.event.workflow_run.html_url }})
+            Hi everyone, a new comment was added to an issue in *${{ github.repository }}*.
+            
+            Check out issue #[${{ github.event.issue.number }}](${{ github.event.issue.html_url }}).
+            The comment was posted by [${{ github.event.comment.user.login }}](${{ github.event.comment.user.html_url }}):
+            
+            > ${{ github.event.comment.body }}
+            
+            See the comment details [here](${{ github.event.comment.html_url }}).
