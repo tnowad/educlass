@@ -1,8 +1,10 @@
 import { ObjectType, Field } from '@nestjs/graphql';
+import { Course } from 'src/courses/entities/course.entity';
 import {
   Column,
   CreateDateColumn,
   Entity,
+  ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -39,4 +41,8 @@ export class Assignment {
   @Field()
   @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
+
+  @Field(() => Course)
+  @ManyToOne(() => Course, (course) => course.assignments)
+  course: Course;
 }

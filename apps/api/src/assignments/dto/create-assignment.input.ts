@@ -18,4 +18,8 @@ export class CreateAssignmentInput {
   @Field()
   @IsDate()
   dueDate: Date;
+
+  @Field()
+  @IsString()
+  courseId: string;
 }

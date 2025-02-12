@@ -3,6 +3,7 @@
 # ------------------------------------------------------
 
 type Assignment {
+  course: Course!
   createdAt: DateTime!
   description: String!
   dueDate: DateTime
@@ -13,6 +14,7 @@ type Assignment {
 }
 
 type Course {
+  assignments: [Assignment!]
   code: String!
   createdAt: DateTime!
   id: String!
@@ -25,6 +27,7 @@ type Course {
 }
 
 input CreateAssignmentInput {
+  courseId: String!
   description: String!
   dueDate: DateTime!
   startDate: DateTime!
@@ -141,6 +144,7 @@ type TokensResult {
 }
 
 input UpdateAssignmentInput {
+  courseId: String
   description: String
   dueDate: DateTime
   id: String!
