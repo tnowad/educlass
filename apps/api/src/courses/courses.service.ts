@@ -4,6 +4,7 @@ import { UpdateCourseInput } from './dto/update-course.input';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Course } from './entities/course.entity';
 import { Repository } from 'typeorm';
+import * as crypto from 'crypto';
 
 @Injectable()
 export class CoursesService {
@@ -11,13 +12,11 @@ export class CoursesService {
     @InjectRepository(Course) private coursesRepository: Repository<Course>,
   ) {}
   async create(createCourseInput: CreateCourseInput) {
-    const chars =
-      'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    let result = '';
-    for (let i = 0; i < 7; i++) {
-      result += chars.charAt(Math.floor(Math.random() * chars.length));
-    }
-    const code = result;
+    const code = crypto
+      .randomBytes(5)
+      .toString('base64')
+      .replace(/[^a-zA-Z0-9]/g, '')
+      .slice(0, 7);
     const inviteLink = `localhost:3000/classroom/${code}`;
 
     const newCourse = this.coursesRepository.create({
