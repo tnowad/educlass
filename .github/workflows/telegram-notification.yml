@@ -1,13 +1,11 @@
 name: GitHub to Telegram Notification
 
 on:
-  # push:
   pull_request:
+  pull_request_review:
+  pull_request_review_comment:
   issues:
-  release:
-  fork:
-  delete:
-  create:
+  issue_comment:
   workflow_run:
     workflows: ["CI/CD Pipeline"]
     types: 
@@ -20,14 +18,99 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Send Telegram Notification
+      - name: PR Notification
+        if: github.event_name == 'pull_request'
         uses: appleboy/telegram-action@master
         with:
           to: "${{ secrets.TELEGRAM_CHAT_ID }}"
           token: "${{ secrets.TELEGRAM_BOT_TOKEN }}"
           message: |
-            🚀 *GitHub Event Notification* 🚀
-            🔹 Repository: [${{ github.repository }}](https://github.com/${{ github.repository }})
-            🔹 Event: *${{ github.event_name }}*
-            🔹 Actor: [${{ github.actor }}](https://github.com/${{ github.actor }})
-            🔹 Commit: [${{ github.sha }}](https://github.com/${{ github.repository }}/commit/${{ github.sha }})
+            🚀 *Pull Request Notification* 🚀
+            📌 *Repository:* [${{ github.repository }}](https://github.com/${{ github.repository }})
+            📢 *Action:* `${{ github.event.action }}`
+            🔀 *Pull Request:* [#${{ github.event.pull_request.number }}](${{ github.event.pull_request.html_url }})
+            ✍ *Title:* `${{ github.event.pull_request.title }}`
+            👤 *By:* [${{ github.event.pull_request.user.login }}](${{ github.event.pull_request.user.html_url }})
+            🔄 *Status:* `${{ github.event.pull_request.state }}`
+
+            🔗 *Diff:* [View Changes](${{ github.event.pull_request.html_url }}/files)
+
+      - name: PR Review Notification
+        if: github.event_name == 'pull_request_review'
+        uses: appleboy/telegram-action@master
+        with:
+          to: "${{ secrets.TELEGRAM_CHAT_ID }}"
+          token: "${{ secrets.TELEGRAM_BOT_TOKEN }}"
+          message: |
+            🔍 *Pull Request Review* 🔍
+            📌 *Repository:* [${{ github.repository }}](https://github.com/${{ github.repository }})
+            📢 *Action:* `${{ github.event.action }}`
+            🔀 *Pull Request:* [#${{ github.event.pull_request.number }}](${{ github.event.pull_request.html_url }})
+            👤 *Reviewer:* [${{ github.event.review.user.login }}](${{ github.event.review.user.html_url }})
+            📝 *State:* `${{ github.event.review.state }}`
+            💬 *Comment:* `${{ github.event.review.body }}`
+
+            🔗 *View Review:* [Open Review](${{ github.event.review.html_url }})
+
+      - name: PR Review Comment Notification
+        if: github.event_name == 'pull_request_review_comment'
+        uses: appleboy/telegram-action@master
+        with:
+          to: "${{ secrets.TELEGRAM_CHAT_ID }}"
+          token: "${{ secrets.TELEGRAM_BOT_TOKEN }}"
+          message: |
+            💬 *Pull Request Review Comment* 💬
+            📌 *Repository:* [${{ github.repository }}](https://github.com/${{ github.repository }})
+            🔀 *PR:* [#${{ github.event.pull_request.number }}](${{ github.event.pull_request.html_url }})
+            👤 *By:* [${{ github.event.comment.user.login }}](${{ github.event.comment.user.html_url }})
+            📝 *Comment:* `${{ github.event.comment.body }}`
+
+            🔗 *View Comment:* [Open Comment](${{ github.event.comment.html_url }})
+
+      - name: Issue Notification
+        if: github.event_name == 'issues'
+        uses: appleboy/telegram-action@master
+        with:
+          to: "${{ secrets.TELEGRAM_CHAT_ID }}"
+          token: "${{ secrets.TELEGRAM_BOT_TOKEN }}"
+          message: |
+            📝 *Issue Notification* 📝
+            📌 *Repository:* [${{ github.repository }}](https://github.com/${{ github.repository }})
+            📢 *Action:* `${{ github.event.action }}`
+            🆕 *Issue:* [#${{ github.event.issue.number }}](${{ github.event.issue.html_url }})
+            ✍ *Title:* `${{ github.event.issue.title }}`
+            👤 *By:* [${{ github.event.issue.user.login }}](${{ github.event.issue.user.html_url }})
+            💬 *Comments:* `${{ github.event.issue.comments }}`
+
+            🔗 *View Issue:* [Open Issue](${{ github.event.issue.html_url }})
+
+      - name: Issue Comment Notification
+        if: github.event_name == 'issue_comment'
+        uses: appleboy/telegram-action@master
+        with:
+          to: "${{ secrets.TELEGRAM_CHAT_ID }}"
+          token: "${{ secrets.TELEGRAM_BOT_TOKEN }}"
+          message: |
+            💬 *Issue Comment Notification* 💬
+            📌 *Repository:* [${{ github.repository }}](https://github.com/${{ github.repository }})
+            🆕 *Issue:* [#${{ github.event.issue.number }}](${{ github.event.issue.html_url }})
+            👤 *By:* [${{ github.event.comment.user.login }}](${{ github.event.comment.user.html_url }})
+            📝 *Comment:* `${{ github.event.comment.body }}`
+
+            🔗 *View Comment:* [Open Comment](${{ github.event.comment.html_url }})
+
+      - name: CI/CD Workflow Notification
+        if: github.event_name == 'workflow_run'
+        uses: appleboy/telegram-action@master
+        with:
+          to: "${{ secrets.TELEGRAM_CHAT_ID }}"
+          token: "${{ secrets.TELEGRAM_BOT_TOKEN }}"
+          message: |
+            🔄 *CI/CD Pipeline Completed* 🔄
+            📌 *Repository:* [${{ github.repository }}](https://github.com/${{ github.repository }})
+            🎯 *Workflow:* `"CI/CD Pipeline"`
+            ✅ *Status:* `${{ github.event.workflow_run.conclusion }}`
+            🕒 *Duration:* `${{ github.event.workflow_run.run_duration_ms }}ms`
+            👤 *Triggered by:* [${{ github.event.sender.login }}](${{ github.event.sender.html_url }})
+
+            🔗 *Run Details:* [View Run](${{ github.event.workflow_run.html_url }})
