@@ -20,6 +20,7 @@ jobs:
         with:
           to: "${{ secrets.TELEGRAM_CHAT_ID }}"
           token: "${{ secrets.TELEGRAM_BOT_TOKEN }}"
+          format: "markdown"
           message: |
             Hey everyone, there's an update in *${{ github.repository }}*!
             
@@ -36,6 +37,7 @@ jobs:
         with:
           to: "${{ secrets.TELEGRAM_CHAT_ID }}"
           token: "${{ secrets.TELEGRAM_BOT_TOKEN }}"
+          format: "markdown"
           message: |
             Hi team, a review has just been submitted on PR #[${{ github.event.pull_request.number }}](${{ github.event.pull_request.html_url }}) in *${{ github.repository }}*.
             
@@ -53,6 +55,7 @@ jobs:
         with:
           to: "${{ secrets.TELEGRAM_CHAT_ID }}"
           token: "${{ secrets.TELEGRAM_BOT_TOKEN }}"
+          format: "markdown"
           message: |
             Hey there! A new comment was added to a pull request review in *${{ github.repository }}*.
             
@@ -69,6 +72,7 @@ jobs:
         with:
           to: "${{ secrets.TELEGRAM_CHAT_ID }}"
           token: "${{ secrets.TELEGRAM_BOT_TOKEN }}"
+          format: "markdown"
           message: |
             Hello team, there's a new update on an issue in *${{ github.repository }}*.
             
@@ -85,6 +89,7 @@ jobs:
         with:
           to: "${{ secrets.TELEGRAM_CHAT_ID }}"
           token: "${{ secrets.TELEGRAM_BOT_TOKEN }}"
+          format: "markdown"
           message: |
             Hi everyone, a new comment was added to an issue in *${{ github.repository }}*.
             
