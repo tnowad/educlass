@@ -4,6 +4,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -44,5 +45,6 @@ export class Assignment {
 
   @Field(() => Course)
   @ManyToOne(() => Course, (course) => course.assignments)
+  @JoinColumn({ name: 'course_id' })
   course: Course;
 }

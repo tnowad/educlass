@@ -32,7 +32,9 @@ export class AssignmentsService {
   }
 
   findAll() {
-    return this.assignmentsRepository.find();
+    return this.assignmentsRepository.find({
+      relations: ['course'],
+    });
   }
 
   findOne(id: string) {
