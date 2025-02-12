@@ -4,6 +4,7 @@ import { IsOptional, IsString } from 'class-validator';
 @InputType()
 export class UpdateCourseInput {
   @Field()
+  @IsString()
   id: string;
 
   @Field({ nullable: true })
