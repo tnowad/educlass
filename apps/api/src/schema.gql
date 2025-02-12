@@ -56,19 +56,19 @@ type LocalProvider {
 }
 
 type Mutation {
-  create(createCourseInput: CreateCourseInput!): Course!
+  createCourse(createCourseInput: CreateCourseInput!): Course!
   createLocalProvider(createLocalProviderInput: CreateLocalProviderInput!): LocalProvider!
   createUser(createUserInput: CreateUserInput!): User!
   getCurrentUser: User!
-  remove(id: String!): Course!
+  removeCourse(id: String!): Course!
   removeLocalProvider(id: String!): LocalProvider!
   removeUser(id: String!): User!
   requestPasswordReset(requestResetPasswordInput: RequestResetPasswordInput!): RequestResetPasswordResult!
   resetPassword(resetPasswordInput: ResetPasswordInput!): ResetPasswordResult!
   signIn(signInInput: SignInInput!): TokensResult!
   signUp(signUpInput: SignUpInput!): TokensResult!
-  update(updateCourseInput: UpdateCourseInput!): Course!
   updateAvatar(updateAvatarInput: UpdateAvatarInput!): User!
+  updateCourse(updateCourseInput: UpdateCourseInput!): Course!
   updateLocalProvider(updateLocalProviderInput: UpdateLocalProviderInput!): LocalProvider!
   updateUser(updateUserInput: UpdateUserInput!): User!
   uploadFile(uploadFileInput: UploadFileInput!): File!
