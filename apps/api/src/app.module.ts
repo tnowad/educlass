@@ -15,6 +15,7 @@ import { CacheModule } from '@nestjs/cache-manager';
 import { CoursesModule } from './courses/courses.module';
 import { NestMinioModule } from 'nestjs-minio';
 import { FilesModule } from './files/files.module';
+import { CourseParticipantsModule } from './course-participants/course-participants.module';
 
 @Module({
   imports: [
@@ -64,6 +65,7 @@ import { FilesModule } from './files/files.module';
     MailModule,
     CoursesModule,
     FilesModule,
+    CourseParticipantsModule,
   ],
 })
 export class AppModule {}
