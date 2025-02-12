@@ -4,14 +4,14 @@
 
 type Course {
   code: String!
-  createAt: DateTime!
+  createdAt: DateTime!
   id: String!
   inviteLink: String!
   name: String!
   room: String
   section: String
   subject: String
-  updateAt: DateTime!
+  updatedAt: DateTime!
 }
 
 input CreateCourseInput {

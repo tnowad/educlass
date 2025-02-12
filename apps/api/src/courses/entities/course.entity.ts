@@ -40,9 +40,9 @@ export class Course {
 
   @Field()
   @CreateDateColumn({ name: 'created_at' })
-  createAt: Date;
+  createdAt: Date;
 
   @Field()
   @UpdateDateColumn({ name: 'updated_at' })
-  updateAt: Date;
+  updatedAt: Date;
 }
