@@ -9,31 +9,31 @@ export class CoursesResolver {
   constructor(private readonly coursesService: CoursesService) {}
 
   @Mutation(() => Course)
-  async create(
+  async createCourse(
     @Args('createCourseInput') createCourseInput: CreateCourseInput,
   ) {
     return this.coursesService.create(createCourseInput);
   }
 
   @Query(() => [Course], { name: 'Courses' })
-  async findAll() {
+  async findAllCourses() {
     return this.coursesService.findAll();
   }
 
   @Query(() => Course, { name: 'Course' })
-  async findOne(@Args('id') id: string) {
+  async findOneCourse(@Args('id') id: string) {
     return this.coursesService.findOne(id);
   }
 
   @Mutation(() => Course)
-  async update(
+  async updateCourse(
     @Args('updateCourseInput') updateCourseInput: UpdateCourseInput,
   ) {
     return this.coursesService.update(updateCourseInput.id, updateCourseInput);
   }
 
   @Mutation(() => Course)
-  async remove(@Args('id') id: string) {
+  async removeCourse(@Args('id') id: string) {
     return this.coursesService.remove(id);
   }
 }
