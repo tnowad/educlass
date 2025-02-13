@@ -17,12 +17,13 @@ import { NestMinioModule } from 'nestjs-minio';
 import { FilesModule } from './files/files.module';
 import { AssignmentsModule } from './assignments/assignments.module';
 import appConfig from './config/app.config';
+import mailConfig from './mail/config/mail-config';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      load: [appConfig],
+      load: [appConfig, mailConfig],
       envFilePath: '.env',
     }),
     CacheModule.register({
