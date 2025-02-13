@@ -16,6 +16,7 @@ import { CoursesModule } from './courses/courses.module';
 import { NestMinioModule } from 'nestjs-minio';
 import { FilesModule } from './files/files.module';
 import { CourseParticipantsModule } from './course-participants/course-participants.module';
+import { AssignmentsModule } from './assignments/assignments.module';
 
 @Module({
   imports: [
@@ -66,6 +67,7 @@ import { CourseParticipantsModule } from './course-participants/course-participa
     CoursesModule,
     FilesModule,
     CourseParticipantsModule,
+    AssignmentsModule,
   ],
 })
 export class AppModule {}
