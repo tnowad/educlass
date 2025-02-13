@@ -5,13 +5,19 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Course } from './entities/course.entity';
 import { Repository } from 'typeorm';
 import * as crypto from 'crypto';
+import {
+  CourseParticipant,
+  RoleEnum,
+} from 'src/course-participants/entities/course-participant.entity';
 
 @Injectable()
 export class CoursesService {
   constructor(
     @InjectRepository(Course) private coursesRepository: Repository<Course>,
+    @InjectRepository(CourseParticipant)
+    private readonly courseParticipantsRepository: Repository<CourseParticipant>,
   ) {}
-  async create(createCourseInput: CreateCourseInput) {
+  async create(createCourseInput: CreateCourseInput & { userId: string }) {
     const code = crypto
       .randomBytes(5)
       .toString('base64')
@@ -28,9 +34,18 @@ export class CoursesService {
       inviteLink,
     });
 
-    return this.coursesRepository.save(newCourse);
-  }
+    const savedCourse = await this.coursesRepository.save(newCourse);
 
+    const courseParticipant = this.courseParticipantsRepository.create({
+      userId: createCourseInput.userId,
+      courseId: savedCourse.id,
+      role: RoleEnum.OWNER,
+    });
+
+    await this.courseParticipantsRepository.save(courseParticipant);
+
+    return savedCourse;
+  }
   findAll() {
     return this.coursesRepository.find();
   }

@@ -1,4 +1,4 @@
-import { Resolver, Query, Mutation, Args } from '@nestjs/graphql';
+import { Resolver, Query, Mutation, Args, Context } from '@nestjs/graphql';
 import { CoursesService } from './courses.service';
 import { CreateCourseInput } from './dto/create-course.input';
 import { UpdateCourseInput } from './dto/update-course.input';
@@ -14,8 +14,11 @@ export class CoursesResolver {
   @UseGuards(GqlAuthGuard)
   async createCourse(
     @Args('createCourseInput') createCourseInput: CreateCourseInput,
+    @Context() context: any,
   ) {
-    return this.coursesService.create(createCourseInput);
+    const userId = context.req.user.userId;
+    console.log('userId', userId);
+    return this.coursesService.create({ ...createCourseInput, userId });
   }
 
   @Query(() => [Course], { name: 'Courses' })
