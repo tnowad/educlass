@@ -46,6 +46,7 @@ export class CoursesService {
 
     return savedCourse;
   }
+
   findAll() {
     return this.coursesRepository.find();
   }
