@@ -63,7 +63,16 @@ export class CourseParticipantsService {
     id: string,
     updateCourseParticipantInput: UpdateCourseParticipantInput,
   ): Promise<CourseParticipant> {
-    const courseParticipant = await this.findOne(id);
+    const courseParticipant = await this.courseParticipantsRepository.findOne({
+      where: { id },
+    });
+
+    if (courseParticipant.role !== RoleEnum.OWNER) {
+      throw new ForbiddenException(
+        'Only the course owner can update participants',
+      );
+    }
+
     Object.assign(courseParticipant, updateCourseParticipantInput);
     return this.courseParticipantsRepository.save(courseParticipant);
   }
