@@ -20,12 +20,13 @@ import appConfig from './config/app.config';
 import mailConfig from './mail/config/mail-config';
 import minioConfig from './files/config/minio-config';
 import { AllConfigType } from './config/app.type';
+import databaseConfig from './common/config/database-config';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      load: [appConfig, mailConfig, minioConfig],
+      load: [appConfig, mailConfig, minioConfig, databaseConfig],
       envFilePath: '.env',
     }),
     CacheModule.register({
@@ -49,16 +50,19 @@ import { AllConfigType } from './config/app.type';
       secret: 'secret',
       signOptions: { expiresIn: '60s' },
     }),
-    TypeOrmModule.forRoot({
-      type: 'postgres',
-      host: process.env.POSTGRES_HOST,
-      port: parseInt(process.env.POSTGRES_PORT, 10),
-      username: process.env.POSTGRES_USER,
-      password: process.env.POSTGRES_PASSWORD,
-      database: process.env.POSTGRES_DB,
-      entities: ['dist/**/*.entity{.ts,.js}'],
-      logging: true,
-      synchronize: true,
+    TypeOrmModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService<AllConfigType>) => ({
+        type: 'postgres',
+        host: configService.get('database').host,
+        port: configService.get('database').port,
+        username: configService.get('database').username,
+        password: configService.get('database').password,
+        database: configService.get('database').database,
+        synchronize: configService.get('database').synchronize,
+        logging: configService.get('database').logging,
+        entities: ['dist/**/*.entity{.ts,.js}'],
+      }),
     }),
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
