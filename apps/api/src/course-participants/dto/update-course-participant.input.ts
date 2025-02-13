@@ -1,7 +1,8 @@
 import { Field, InputType } from '@nestjs/graphql';
 import { CreateCourseParticipantInput } from './create-course-participant.input';
 import { PartialType } from '@nestjs/mapped-types';
-import { IsString } from 'class-validator';
+import { IsEnum, IsOptional, IsString } from 'class-validator';
+import { RoleEnum } from '../entities/course-participant.entity';
 
 @InputType()
 export class UpdateCourseParticipantInput extends PartialType(
@@ -10,4 +11,9 @@ export class UpdateCourseParticipantInput extends PartialType(
   @Field()
   @IsString()
   id: string;
+
+  @Field(() => RoleEnum, { nullable: true })
+  @IsOptional()
+  @IsEnum(RoleEnum)
+  role?: RoleEnum;
 }
