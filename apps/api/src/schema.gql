@@ -152,6 +152,7 @@ input UpdateAssignmentInput {
   description: String
   dueDate: DateTime
   id: String!
+  removeAttachements: [String!]
   startDate: DateTime
   title: String
 }

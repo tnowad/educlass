@@ -6,7 +6,7 @@ import { Assignment } from './entities/assignment.entity';
 import { DataSource, Repository } from 'typeorm';
 import { CoursesService } from 'src/courses/courses.service';
 import { FilesService } from 'src/files/files.service';
-import { File } from 'src/files/entities/file.entity';
+import { pick } from 'lodash';
 
 @Injectable()
 export class AssignmentsService {
@@ -29,7 +29,7 @@ export class AssignmentsService {
     await queryRunner.connect();
     await queryRunner.startTransaction();
 
-    let uploadedFiles: File[] = [];
+    let uploadedFileIds: string[] = [];
 
     try {
       const { courseId } = createAssignmentInput;
@@ -52,7 +52,7 @@ export class AssignmentsService {
         const attachements = await this.filesService.uploadFiles(
           createAssignmentInput.attachements,
         );
-        uploadedFiles = attachements;
+        uploadedFileIds = attachements.map((attachement) => attachement.id);
         assignment.attachements = attachements;
       }
 
@@ -67,11 +67,11 @@ export class AssignmentsService {
     } catch (error) {
       await queryRunner.rollbackTransaction();
 
-      if (uploadedFiles.length > 0) {
+      if (uploadedFileIds.length > 0) {
         this.logger.error(
-          `Rolling back uploaded files: ${JSON.stringify(uploadedFiles)}`,
+          `Rolling back uploaded files: ${JSON.stringify(uploadedFileIds)}`,
         );
-        await this.filesService.deleteFiles(uploadedFiles);
+        await this.filesService.deleteFiles(uploadedFileIds);
       }
 
       throw error;
@@ -90,13 +90,76 @@ export class AssignmentsService {
     return this.assignmentsRepository.findOne({ where: { id } });
   }
 
-  update(id: string, updateAssignmentInput: UpdateAssignmentInput) {
-    return this.assignmentsRepository.update(id, {
-      title: updateAssignmentInput.title,
-      description: updateAssignmentInput.description,
-      startDate: updateAssignmentInput.startDate,
-      dueDate: updateAssignmentInput.dueDate,
-    });
+  async update(id: string, updateAssignmentInput: UpdateAssignmentInput) {
+    const { attachements, removeAttachements, ...rest } = updateAssignmentInput;
+
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    let uploadedFileIds: string[] = [];
+
+    try {
+      const assignment = await queryRunner.manager.findOne(
+        this.assignmentsRepository.target,
+        {
+          where: { id },
+          relations: ['attachements'],
+        },
+      );
+
+      if (!assignment) {
+        throw new NotFoundException(`Assignment with ID ${id} not found`);
+      }
+
+      const allowedFields: (keyof Assignment)[] = [
+        'title',
+        'description',
+        'startDate',
+        'dueDate',
+      ];
+
+      const updatedAssignment = this.assignmentsRepository.merge(
+        assignment,
+        pick(rest, allowedFields),
+      );
+
+      if (removeAttachements?.length) {
+        updatedAssignment.attachements = updatedAssignment.attachements.filter(
+          (attachement) => !removeAttachements.includes(attachement.id),
+        );
+      }
+
+      if (attachements?.length) {
+        const newAttachements =
+          await this.filesService.uploadFiles(attachements);
+        uploadedFileIds = newAttachements.map((attachement) => attachement.id);
+        updatedAssignment.attachements = [
+          ...updatedAssignment.attachements,
+          ...newAttachements,
+        ];
+      }
+
+      await queryRunner.manager.save(updatedAssignment);
+      await queryRunner.commitTransaction();
+
+      if (removeAttachements?.length) {
+        await this.filesService.deleteFiles(removeAttachements);
+      }
+
+      return updatedAssignment;
+    } catch (error) {
+      this.logger.error(`Error updating assignment: ${error.message}`);
+      await queryRunner.rollbackTransaction();
+
+      if (uploadedFileIds.length) {
+        await this.filesService.deleteFiles(uploadedFileIds);
+      }
+
+      throw error;
+    } finally {
+      await queryRunner.release();
+    }
   }
 
   remove(id: string) {

@@ -48,12 +48,14 @@ export class FilesService {
     );
   }
 
-  async deleteFiles(uploadedFiles: File[]) {
+  async deleteFiles(uploadedFileIds: string[]) {
+    const uploadedFiles = await this.filesRepository.findBy(
+      uploadedFileIds.map((id) => ({ id })),
+    );
     await Promise.all(
-      uploadedFiles.map(async (file) => {
-        await this.minioClient.removeObject('educlass', file.objectName);
-        await this.filesRepository.delete(file.id);
-      }),
+      uploadedFiles.map((uploadedFile) =>
+        this.minioClient.removeObject('educlass', uploadedFile.objectName),
+      ),
     );
   }
 }
