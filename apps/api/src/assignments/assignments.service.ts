@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { CreateAssignmentInput } from './dto/create-assignment.input';
 import { UpdateAssignmentInput } from './dto/update-assignment.input';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -8,6 +8,8 @@ import { CoursesService } from 'src/courses/courses.service';
 
 @Injectable()
 export class AssignmentsService {
+  private readonly logger: Logger = new Logger(AssignmentsService.name);
+
   constructor(
     private readonly dataSource: DataSource,
     @InjectRepository(Assignment)
@@ -15,6 +17,9 @@ export class AssignmentsService {
     private readonly coursesService: CoursesService,
   ) {}
   async create(createAssignmentInput: CreateAssignmentInput) {
+    this.logger.debug(
+      `Creating assignment with input: ${JSON.stringify(createAssignmentInput)}`,
+    );
     return this.dataSource.transaction(async (manager) => {
       const { courseId } = createAssignmentInput;
       const course = await this.coursesService.findOne(courseId);
@@ -26,6 +31,8 @@ export class AssignmentsService {
 
       const assignment = manager.create(Assignment, createAssignmentInput);
       assignment.course = course;
+
+      this.logger.debug(`Saving assignment: ${JSON.stringify(assignment)}`);
 
       return manager.save(Assignment, assignment);
     });

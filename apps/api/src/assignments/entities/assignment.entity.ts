@@ -1,11 +1,13 @@
 import { ObjectType, Field } from '@nestjs/graphql';
 import { Course } from 'src/courses/entities/course.entity';
+import { File } from 'src/files/entities/file.entity';
 import {
   Column,
   CreateDateColumn,
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -47,4 +49,8 @@ export class Assignment {
   @ManyToOne(() => Course, (course) => course.assignments)
   @JoinColumn({ name: 'course_id' })
   course: Course;
+
+  @Field(() => [File])
+  @OneToMany(() => File, (file) => file.assignment)
+  attachements: File[];
 }
