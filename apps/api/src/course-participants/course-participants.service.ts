@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CourseParticipant } from './entities/course-participant.entity';
@@ -17,9 +21,21 @@ export class CourseParticipantsService {
       userId: string;
     },
   ): Promise<CourseParticipant> {
+    const { userId, courseId } = createCourseParticipantInput;
+
+    const existingParticipant = await this.courseParticipantsRepository.findOne(
+      {
+        where: { userId, courseId },
+      },
+    );
+
+    if (existingParticipant) {
+      throw new ConflictException('User is already enrolled in this course');
+    }
+
     const courseParticipant = this.courseParticipantsRepository.create({
       ...createCourseParticipantInput,
-      userId: createCourseParticipantInput.userId,
+      userId,
     });
 
     return this.courseParticipantsRepository.save(courseParticipant);
