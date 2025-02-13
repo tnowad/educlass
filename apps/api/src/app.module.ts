@@ -16,10 +16,13 @@ import { CoursesModule } from './courses/courses.module';
 import { NestMinioModule } from 'nestjs-minio';
 import { FilesModule } from './files/files.module';
 import { AssignmentsModule } from './assignments/assignments.module';
+import appConfig from './config/app.config';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
+      isGlobal: true,
+      load: [appConfig],
       envFilePath: '.env',
     }),
     CacheModule.register({
