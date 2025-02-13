@@ -1,13 +1,14 @@
 import { Field, InputType } from '@nestjs/graphql';
-import { IsString } from 'class-validator';
+import { IsEnum, IsString } from 'class-validator';
+import { RoleEnum } from '../entities/course-participant.entity';
 
 @InputType()
 export class CreateCourseParticipantInput {
   @Field()
   @IsString()
-  userId: string;
-
-  @Field()
-  @IsString()
   courseId: string;
+
+  @Field(() => RoleEnum, { defaultValue: RoleEnum.PARTICIPANT })
+  @IsEnum(RoleEnum)
+  role?: RoleEnum = RoleEnum.PARTICIPANT;
 }
