@@ -1,9 +1,12 @@
 import { ObjectType, Field } from '@nestjs/graphql';
+import { Assignment } from 'src/assignments/entities/assignment.entity';
 import { User } from 'src/users/entities/user.entity';
 import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
+  ManyToOne,
   OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -46,4 +49,9 @@ export class File {
     onDelete: 'CASCADE',
   })
   user: User;
+
+  @Field(() => Assignment, { nullable: true })
+  @ManyToOne(() => Assignment, (assignment) => assignment.attachements)
+  @JoinColumn({ name: 'assignment_id' })
+  assignment: Assignment;
 }
