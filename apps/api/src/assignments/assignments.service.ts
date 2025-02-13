@@ -5,6 +5,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Assignment } from './entities/assignment.entity';
 import { DataSource, Repository } from 'typeorm';
 import { CoursesService } from 'src/courses/courses.service';
+import { FilesService } from 'src/files/files.service';
+import { File } from 'src/files/entities/file.entity';
 
 @Injectable()
 export class AssignmentsService {
@@ -15,12 +17,21 @@ export class AssignmentsService {
     @InjectRepository(Assignment)
     private readonly assignmentsRepository: Repository<Assignment>,
     private readonly coursesService: CoursesService,
+    private readonly filesService: FilesService,
   ) {}
+
   async create(createAssignmentInput: CreateAssignmentInput) {
     this.logger.debug(
       `Creating assignment with input: ${JSON.stringify(createAssignmentInput)}`,
     );
-    return this.dataSource.transaction(async (manager) => {
+
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    let uploadedFiles: File[] = [];
+
+    try {
       const { courseId } = createAssignmentInput;
       const course = await this.coursesService.findOne(courseId);
       if (!course) {
@@ -29,18 +40,49 @@ export class AssignmentsService {
 
       // TODO: Check current user has permission to create assignment
 
-      const assignment = manager.create(Assignment, createAssignmentInput);
-      assignment.course = course;
+      const assignment = queryRunner.manager.create(Assignment, {
+        title: createAssignmentInput.title,
+        description: createAssignmentInput.description,
+        startDate: createAssignmentInput.startDate,
+        dueDate: createAssignmentInput.dueDate,
+        course,
+      });
+
+      if (createAssignmentInput.attachements) {
+        const attachements = await this.filesService.uploadFiles(
+          createAssignmentInput.attachements,
+        );
+        uploadedFiles = attachements;
+        assignment.attachements = attachements;
+      }
 
       this.logger.debug(`Saving assignment: ${JSON.stringify(assignment)}`);
+      const savedAssignment = await queryRunner.manager.save(
+        Assignment,
+        assignment,
+      );
 
-      return manager.save(Assignment, assignment);
-    });
+      await queryRunner.commitTransaction();
+      return savedAssignment;
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+
+      if (uploadedFiles.length > 0) {
+        this.logger.error(
+          `Rolling back uploaded files: ${JSON.stringify(uploadedFiles)}`,
+        );
+        await this.filesService.deleteFiles(uploadedFiles);
+      }
+
+      throw error;
+    } finally {
+      await queryRunner.release();
+    }
   }
 
   findAll() {
     return this.assignmentsRepository.find({
-      relations: ['course'],
+      relations: ['course', 'attachements'],
     });
   }
 
@@ -49,7 +91,12 @@ export class AssignmentsService {
   }
 
   update(id: string, updateAssignmentInput: UpdateAssignmentInput) {
-    return this.assignmentsRepository.update(id, updateAssignmentInput);
+    return this.assignmentsRepository.update(id, {
+      title: updateAssignmentInput.title,
+      description: updateAssignmentInput.description,
+      startDate: updateAssignmentInput.startDate,
+      dueDate: updateAssignmentInput.dueDate,
+    });
   }
 
   remove(id: string) {

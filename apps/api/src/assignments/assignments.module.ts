@@ -4,9 +4,10 @@ import { AssignmentsResolver } from './assignments.resolver';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Assignment } from './entities/assignment.entity';
 import { CoursesModule } from 'src/courses/courses.module';
+import { FilesModule } from 'src/files/files.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Assignment]), CoursesModule],
+  imports: [TypeOrmModule.forFeature([Assignment]), CoursesModule, FilesModule],
   providers: [AssignmentsResolver, AssignmentsService],
 })
 export class AssignmentsModule {}

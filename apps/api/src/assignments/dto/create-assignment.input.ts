@@ -1,5 +1,6 @@
 import { InputType, Field } from '@nestjs/graphql';
-import { IsDate, IsString } from 'class-validator';
+import { IsDate, IsOptional, IsString } from 'class-validator';
+import { FileUpload, GraphQLUpload } from 'graphql-upload-ts';
 
 @InputType()
 export class CreateAssignmentInput {
@@ -22,4 +23,8 @@ export class CreateAssignmentInput {
   @Field()
   @IsString()
   courseId: string;
+
+  @IsOptional()
+  @Field(() => [GraphQLUpload], { nullable: true })
+  attachements: Promise<FileUpload>[];
 }

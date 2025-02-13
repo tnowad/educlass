@@ -36,11 +36,24 @@ export class FilesService {
     return newFile;
   }
 
+  async uploadFiles(files: Promise<FileUpload>[]): Promise<File[]> {
+    return Promise.all(files.map((file) => this.uploadFile(file)));
+  }
+
   async getFileUrl(objectName: string): Promise<string> {
     return this.minioClient.presignedGetObject(
       'educlass',
       objectName,
       24 * 60 * 60,
+    );
+  }
+
+  async deleteFiles(uploadedFiles: File[]) {
+    await Promise.all(
+      uploadedFiles.map(async (file) => {
+        await this.minioClient.removeObject('educlass', file.objectName);
+        await this.filesRepository.delete(file.id);
+      }),
     );
   }
 }

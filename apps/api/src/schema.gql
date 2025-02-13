@@ -28,6 +28,7 @@ type Course {
 }
 
 input CreateAssignmentInput {
+  attachements: [Upload!]
   courseId: String!
   description: String!
   dueDate: DateTime!
@@ -146,6 +147,7 @@ type TokensResult {
 }
 
 input UpdateAssignmentInput {
+  attachements: [Upload!]
   courseId: String
   description: String
   dueDate: DateTime
