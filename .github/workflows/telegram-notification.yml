@@ -1,0 +1,98 @@
+name: GitHub to Telegram Notification
+
+on:
+  pull_request:
+  pull_request_review:
+  pull_request_review_comment:
+  issues:
+  issue_comment:
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: PR Notification
+        if: github.event_name == 'pull_request'
+        uses: appleboy/telegram-action@master
+        with:
+          to: "${{ secrets.TELEGRAM_CHAT_ID }}"
+          token: "${{ secrets.TELEGRAM_BOT_TOKEN }}"
+          format: "markdown"
+          message: |
+            Hey everyone, there's an update in *${{ github.repository }}*!
+
+            A pull request (PR #[${{ github.event.pull_request.number }}](${{ github.event.pull_request.html_url }})) has just been **${{ github.event.action }}**.
+            The title of the PR is: _"${{ github.event.pull_request.title }}"_ and it was opened by [${{ github.event.pull_request.user.login }}](${{ github.event.pull_request.user.html_url }}).
+
+            The current status is **${{ github.event.pull_request.state }}**.
+
+            Take a look at the changes here: [View Changes](${{ github.event.pull_request.html_url }}/files)
+
+      - name: PR Review Notification
+        if: github.event_name == 'pull_request_review' && contains(['COMMENTED', 'CHANGES_REQUESTED', 'APPROVED'], github.event.review.state)
+        uses: appleboy/telegram-action@master
+        with:
+          to: "${{ secrets.TELEGRAM_CHAT_ID }}"
+          token: "${{ secrets.TELEGRAM_BOT_TOKEN }}"
+          format: "markdown"
+          message: |
+            Hi team, a review has just been submitted on PR #[${{ github.event.pull_request.number }}](${{ github.event.pull_request.html_url }}) in *${{ github.repository }}*.
+
+            The review action is **${{ github.event.action }}**.
+            It was submitted by [${{ github.event.review.user.login }}](${{ github.event.review.user.html_url }}), and the review is marked as **${{ github.event.review.state }}**.
+
+            Here's what was said:
+            > ${{ github.event.review.body }}
+
+            You can check out the full review [here](${{ github.event.review.html_url }}).
+
+      - name: PR Review Comment Notification
+        if: github.event_name == 'pull_request_review_comment'
+        uses: appleboy/telegram-action@master
+        with:
+          to: "${{ secrets.TELEGRAM_CHAT_ID }}"
+          token: "${{ secrets.TELEGRAM_BOT_TOKEN }}"
+          format: "markdown"
+          message: |
+            Hi team, a new comment was added to a PR review in *${{ github.repository }}*.
+
+            PR #[${{ github.event.pull_request.number }}](${{ github.event.pull_request.html_url }}) received a comment from [${{ github.event.comment.user.login }}](${{ github.event.comment.user.html_url }}):
+            > ${{ github.event.comment.body }}
+
+            See the full comment [here](${{ github.event.comment.html_url }}).
+
+      - name: Issue Notification
+        if: github.event_name == 'issues'
+        uses: appleboy/telegram-action@master
+        with:
+          to: "${{ secrets.TELEGRAM_CHAT_ID }}"
+          token: "${{ secrets.TELEGRAM_BOT_TOKEN }}"
+          format: "markdown"
+          message: |
+            Hello team, there's a new update on an issue in *${{ github.repository }}*.
+
+            The issue (#[${{ github.event.issue.number }}](${{ github.event.issue.html_url }})) has been **${{ github.event.action }}**.
+            Its title is: _"${{ github.event.issue.title }}"_ and it was opened by [${{ github.event.issue.user.login }}](${{ github.event.issue.user.html_url }}).
+
+            It currently has **${{ github.event.issue.comments }}** comment(s).
+
+            You can view the full details of the issue [here](${{ github.event.issue.html_url }}).
+
+      - name: Issue Comment Notification
+        if: github.event_name == 'issue_comment'
+        uses: appleboy/telegram-action@master
+        with:
+          to: "${{ secrets.TELEGRAM_CHAT_ID }}"
+          token: "${{ secrets.TELEGRAM_BOT_TOKEN }}"
+          format: "markdown"
+          message: |
+            Hi everyone, a new comment was added to an issue in *${{ github.repository }}*.
+
+            Check out issue #[${{ github.event.issue.number }}](${{ github.event.issue.html_url }}).
+            The comment was posted by [${{ github.event.comment.user.login }}](${{ github.event.comment.user.html_url }}):
+            > ${{ github.event.comment.body }}
+
+            See the comment details [here](${{ github.event.comment.html_url }}).

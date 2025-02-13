@@ -13,6 +13,10 @@ import { MailerModule } from './mailer/mailer.module';
 import { MailModule } from './mail/mail.module';
 import { CacheModule } from '@nestjs/cache-manager';
 import { PostsModule } from './posts/posts.module';
+import { CoursesModule } from './courses/courses.module';
+import { NestMinioModule } from 'nestjs-minio';
+import { FilesModule } from './files/files.module';
+import { AssignmentsModule } from './assignments/assignments.module';
 
 @Module({
   imports: [
@@ -23,6 +27,14 @@ import { PostsModule } from './posts/posts.module';
       isGlobal: true,
       ttl: 60,
       max: 10,
+    }),
+    NestMinioModule.register({
+      isGlobal: true,
+      endPoint: process.env.MINIO_ENDPOINT,
+      port: parseInt(process.env.MINIO_PORT, 10),
+      useSSL: false,
+      accessKey: process.env.MINIO_ACCESS_KEY,
+      secretKey: process.env.MINIO_SECRET_KEY,
     }),
     JwtModule.register({
       global: true,
@@ -52,7 +64,13 @@ import { PostsModule } from './posts/posts.module';
     LocalProvidersModule,
     MailerModule,
     MailModule,
+<<<<<<< HEAD
     PostsModule,
+=======
+    CoursesModule,
+    FilesModule,
+    AssignmentsModule,
+>>>>>>> a1e21bd3101e404b4f534cdb7ad5e13dbba86cc7
   ],
 })
 export class AppModule {}

@@ -2,6 +2,47 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+type Assignment {
+  attachements: [File!]!
+  course: Course!
+  createdAt: DateTime!
+  description: String!
+  dueDate: DateTime
+  id: String!
+  startDate: DateTime
+  title: String!
+  updatedAt: DateTime!
+}
+
+type Course {
+  assignments: [Assignment!]
+  code: String!
+  createdAt: DateTime!
+  id: String!
+  inviteLink: String!
+  name: String!
+  room: String
+  section: String
+  subject: String
+  updatedAt: DateTime!
+}
+
+input CreateAssignmentInput {
+  attachements: [Upload!]
+  courseId: String!
+  description: String!
+  dueDate: DateTime!
+  startDate: DateTime!
+  title: String!
+}
+
+input CreateCourseInput {
+  name: String!
+  room: String
+  section: String
+  subject: String
+}
+
 input CreateLocalProviderInput {
   password: String!
 }
@@ -17,6 +58,18 @@ A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date
 """
 scalar DateTime
 
+type File {
+  assignment: Assignment
+  createdAt: DateTime!
+  filename: String!
+  id: String!
+  mimetype: String
+  objectName: String!
+  updatedAt: DateTime!
+  url: String
+  user: User
+}
+
 type LocalProvider {
   createdAt: DateTime!
   id: String!
@@ -26,20 +79,32 @@ type LocalProvider {
 }
 
 type Mutation {
+  createAssignment(createAssignmentInput: CreateAssignmentInput!): Assignment!
+  createCourse(createCourseInput: CreateCourseInput!): Course!
   createLocalProvider(createLocalProviderInput: CreateLocalProviderInput!): LocalProvider!
   createUser(createUserInput: CreateUserInput!): User!
   getCurrentUser: User!
+  removeAssignment(id: String!): Assignment!
+  removeCourse(id: String!): Course!
   removeLocalProvider(id: String!): LocalProvider!
   removeUser(id: String!): User!
   requestPasswordReset(requestResetPasswordInput: RequestResetPasswordInput!): RequestResetPasswordResult!
   resetPassword(resetPasswordInput: ResetPasswordInput!): ResetPasswordResult!
   signIn(signInInput: SignInInput!): TokensResult!
   signUp(signUpInput: SignUpInput!): TokensResult!
+  updateAssignment(updateAssignmentInput: UpdateAssignmentInput!): Assignment!
+  updateAvatar(updateAvatarInput: UpdateAvatarInput!): User!
+  updateCourse(updateCourseInput: UpdateCourseInput!): Course!
   updateLocalProvider(updateLocalProviderInput: UpdateLocalProviderInput!): LocalProvider!
   updateUser(updateUserInput: UpdateUserInput!): User!
+  uploadFile(uploadFileInput: UploadFileInput!): File!
 }
 
 type Query {
+  Course(id: String!): Course!
+  Courses: [Course!]!
+  assignment(id: String!): Assignment!
+  assignments: [Assignment!]!
   localProvider(id: String!): LocalProvider!
   localProviders: [LocalProvider!]!
   user(id: String!): User!
@@ -81,6 +146,29 @@ type TokensResult {
   refreshToken: String!
 }
 
+input UpdateAssignmentInput {
+  attachements: [Upload!]
+  courseId: String
+  description: String
+  dueDate: DateTime
+  id: String!
+  removeAttachements: [String!]
+  startDate: DateTime
+  title: String
+}
+
+input UpdateAvatarInput {
+  avatar: Upload
+}
+
+input UpdateCourseInput {
+  id: String!
+  name: String
+  room: String
+  section: String
+  subject: String
+}
+
 input UpdateLocalProviderInput {
   id: String!
   password: String
@@ -93,7 +181,15 @@ input UpdateUserInput {
   name: String
 }
 
+"""The `Upload` scalar type represents a file upload."""
+scalar Upload
+
+input UploadFileInput {
+  file: Upload
+}
+
 type User {
+  avatar: File
   createdAt: DateTime!
   email: String!
   emailVerified: Boolean!

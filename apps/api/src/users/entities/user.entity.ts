@@ -1,4 +1,5 @@
 import { ObjectType, Field } from '@nestjs/graphql';
+import { File } from 'src/files/entities/file.entity';
 import { LocalProvider } from 'src/local-providers/entities/local-provider.entity';
 import {
   Column,
@@ -30,15 +31,15 @@ export class User {
   email: string;
 
   @Field()
-  @Column({ type: 'boolean', default: false })
+  @Column({ name: 'email_verified', type: 'boolean', default: false })
   emailVerified: boolean;
 
   @Field()
-  @CreateDateColumn()
+  @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 
   @Field()
-  @UpdateDateColumn()
+  @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
 
   @Field(() => LocalProvider, { nullable: true })
@@ -47,9 +48,21 @@ export class User {
     nullable: true,
   })
   @JoinColumn({
-    name: 'localProviderId',
+    name: 'local_provider_id',
     referencedColumnName: 'id',
-    foreignKeyConstraintName: 'FK_localProvider_user',
+    foreignKeyConstraintName: 'FK_local_provider_user',
   })
   localProvider: LocalProvider;
+
+  @Field(() => File, { nullable: true })
+  @OneToOne(() => File, (file) => file.user, {
+    cascade: true,
+    nullable: true,
+  })
+  @JoinColumn({
+    name: 'avatar_id',
+    referencedColumnName: 'id',
+    foreignKeyConstraintName: 'FK_avatar_user',
+  })
+  avatar: File;
 }

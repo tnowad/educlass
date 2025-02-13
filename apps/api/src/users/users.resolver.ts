@@ -11,6 +11,10 @@ import { User } from './entities/user.entity';
 import { CreateUserInput } from './dto/create-user.input';
 import { UpdateUserInput } from './dto/update-user.input';
 import { LocalProvider } from 'src/local-providers/entities/local-provider.entity';
+import { UpdateAvatarInput } from './dto/update-avatar.input';
+import { GqlAuthGuard } from 'src/auth/graphql-auth.guard';
+import { UseGuards } from '@nestjs/common';
+import { CurrentUser } from 'src/auth/decorators/user.decorator';
 
 @Resolver(() => User)
 export class UsersResolver {
@@ -39,6 +43,15 @@ export class UsersResolver {
   @Mutation(() => User)
   removeUser(@Args('id') id: string) {
     return this.usersService.remove(id);
+  }
+
+  @Mutation(() => User)
+  @UseGuards(GqlAuthGuard)
+  updateAvatar(
+    @Args('updateAvatarInput') updateAvatarInput: UpdateAvatarInput,
+    @CurrentUser() user: User,
+  ) {
+    return this.usersService.updateAvatar(user.id, updateAvatarInput);
   }
 
   @ResolveField(() => LocalProvider, { nullable: true })
