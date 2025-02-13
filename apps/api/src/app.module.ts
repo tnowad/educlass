@@ -6,7 +6,7 @@ import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { LocalProvidersModule } from './local-providers/local-providers.module';
 import { JwtModule } from '@nestjs/jwt';
 import { MailerModule } from './mailer/mailer.module';
@@ -18,12 +18,14 @@ import { FilesModule } from './files/files.module';
 import { AssignmentsModule } from './assignments/assignments.module';
 import appConfig from './config/app.config';
 import mailConfig from './mail/config/mail-config';
+import minioConfig from './files/config/minio-config';
+import { AllConfigType } from './config/app.type';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      load: [appConfig, mailConfig],
+      load: [appConfig, mailConfig, minioConfig],
       envFilePath: '.env',
     }),
     CacheModule.register({
@@ -31,13 +33,16 @@ import mailConfig from './mail/config/mail-config';
       ttl: 60,
       max: 10,
     }),
-    NestMinioModule.register({
-      isGlobal: true,
-      endPoint: process.env.MINIO_ENDPOINT,
-      port: parseInt(process.env.MINIO_PORT, 10),
-      useSSL: false,
-      accessKey: process.env.MINIO_ACCESS_KEY,
-      secretKey: process.env.MINIO_SECRET_KEY,
+    NestMinioModule.registerAsync({
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService<AllConfigType>) => ({
+        isGlobal: true,
+        endPoint: configService.get('minio').endPoint,
+        port: configService.get('minio').port,
+        useSSL: configService.get('minio').secure,
+        accessKey: configService.get('minio').accessKey,
+        secretKey: configService.get('minio').secretKey,
+      }),
     }),
     JwtModule.register({
       global: true,
