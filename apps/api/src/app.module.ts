@@ -6,7 +6,7 @@ import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { LocalProvidersModule } from './local-providers/local-providers.module';
 import { JwtModule } from '@nestjs/jwt';
 import { MailerModule } from './mailer/mailer.module';
@@ -16,10 +16,17 @@ import { CoursesModule } from './courses/courses.module';
 import { NestMinioModule } from 'nestjs-minio';
 import { FilesModule } from './files/files.module';
 import { AssignmentsModule } from './assignments/assignments.module';
+import appConfig from './config/app.config';
+import mailConfig from './mail/config/mail-config';
+import minioConfig from './files/config/minio-config';
+import { AllConfigType } from './config/app.type';
+import databaseConfig from './common/config/database-config';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
+      isGlobal: true,
+      load: [appConfig, mailConfig, minioConfig, databaseConfig],
       envFilePath: '.env',
     }),
     CacheModule.register({
@@ -27,29 +34,35 @@ import { AssignmentsModule } from './assignments/assignments.module';
       ttl: 60,
       max: 10,
     }),
-    NestMinioModule.register({
-      isGlobal: true,
-      endPoint: process.env.MINIO_ENDPOINT,
-      port: parseInt(process.env.MINIO_PORT, 10),
-      useSSL: false,
-      accessKey: process.env.MINIO_ACCESS_KEY,
-      secretKey: process.env.MINIO_SECRET_KEY,
+    NestMinioModule.registerAsync({
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService<AllConfigType>) => ({
+        isGlobal: true,
+        endPoint: configService.get('minio').endPoint,
+        port: configService.get('minio').port,
+        useSSL: configService.get('minio').secure,
+        accessKey: configService.get('minio').accessKey,
+        secretKey: configService.get('minio').secretKey,
+      }),
     }),
     JwtModule.register({
       global: true,
       secret: 'secret',
       signOptions: { expiresIn: '60s' },
     }),
-    TypeOrmModule.forRoot({
-      type: 'postgres',
-      host: process.env.POSTGRES_HOST,
-      port: parseInt(process.env.POSTGRES_PORT, 10),
-      username: process.env.POSTGRES_USER,
-      password: process.env.POSTGRES_PASSWORD,
-      database: process.env.POSTGRES_DB,
-      entities: ['dist/**/*.entity{.ts,.js}'],
-      logging: true,
-      synchronize: true,
+    TypeOrmModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService<AllConfigType>) => ({
+        type: 'postgres',
+        host: configService.get('database').host,
+        port: configService.get('database').port,
+        username: configService.get('database').username,
+        password: configService.get('database').password,
+        database: configService.get('database').database,
+        synchronize: configService.get('database').synchronize,
+        logging: configService.get('database').logging,
+        entities: ['dist/**/*.entity{.ts,.js}'],
+      }),
     }),
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
