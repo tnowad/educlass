@@ -1,39 +1,58 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { CourseParticipant } from './entities/course-participant.entity';
 import { CreateCourseParticipantInput } from './dto/create-course-participant.input';
 import { UpdateCourseParticipantInput } from './dto/update-course-participant.input';
-import { InjectRepository } from '@nestjs/typeorm';
-import { CourseParticipant } from './entities/course-participant.entity';
-import { Repository } from 'typeorm';
 
 @Injectable()
 export class CourseParticipantsService {
   constructor(
     @InjectRepository(CourseParticipant)
-    private courseParticipantsRepository: Repository<CourseParticipant>,
+    private readonly courseParticipantsRepository: Repository<CourseParticipant>,
   ) {}
-  create(createCourseParticipantInput: CreateCourseParticipantInput) {
-    return this.courseParticipantsRepository.save(createCourseParticipantInput);
+
+  async create(
+    createCourseParticipantInput: CreateCourseParticipantInput & {
+      userId: string;
+    },
+  ): Promise<CourseParticipant> {
+    const courseParticipant = this.courseParticipantsRepository.create({
+      ...createCourseParticipantInput,
+      userId: createCourseParticipantInput.userId,
+    });
+
+    return this.courseParticipantsRepository.save(courseParticipant);
   }
 
-  findAll() {
+  async findAll(): Promise<CourseParticipant[]> {
     return this.courseParticipantsRepository.find();
   }
 
-  findOne(id: string) {
-    return this.courseParticipantsRepository.findOne({ where: { id } });
+  async findOne(id: string): Promise<CourseParticipant> {
+    const courseParticipant = await this.courseParticipantsRepository.findOne({
+      where: { id },
+    });
+    if (!courseParticipant) {
+      throw new NotFoundException(`CourseParticipant with ID ${id} not found`);
+    }
+    return courseParticipant;
   }
 
-  update(
+  async update(
     id: string,
     updateCourseParticipantInput: UpdateCourseParticipantInput,
-  ) {
-    return this.courseParticipantsRepository.update(
-      id,
-      updateCourseParticipantInput,
-    );
+  ): Promise<CourseParticipant> {
+    const courseParticipant = await this.findOne(id);
+    Object.assign(courseParticipant, updateCourseParticipantInput);
+    return this.courseParticipantsRepository.save(courseParticipant);
   }
 
-  remove(id: string) {
-    return this.courseParticipantsRepository.delete({ id });
+  async remove(id: string): Promise<boolean> {
+    const result = await this.courseParticipantsRepository.delete(id);
+    if (result.affected === 0) {
+      throw new NotFoundException(`CourseParticipant with ID ${id} not found`);
+    }
+    return true;
   }
 }
