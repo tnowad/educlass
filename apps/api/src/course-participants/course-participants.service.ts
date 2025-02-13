@@ -1,11 +1,15 @@
 import {
   ConflictException,
+  ForbiddenException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { CourseParticipant } from './entities/course-participant.entity';
+import {
+  CourseParticipant,
+  RoleEnum,
+} from './entities/course-participant.entity';
 import { CreateCourseParticipantInput } from './dto/create-course-participant.input';
 import { UpdateCourseParticipantInput } from './dto/update-course-participant.input';
 
@@ -65,10 +69,20 @@ export class CourseParticipantsService {
   }
 
   async remove(id: string): Promise<boolean> {
-    const result = await this.courseParticipantsRepository.delete(id);
-    if (result.affected === 0) {
+    const courseParticipant = await this.courseParticipantsRepository.findOne({
+      where: { id },
+    });
+
+    if (!courseParticipant) {
       throw new NotFoundException(`CourseParticipant with ID ${id} not found`);
     }
-    return true;
+
+    if (courseParticipant.role === RoleEnum.OWNER) {
+      throw new ForbiddenException(`Cannot remove the course owner`);
+    }
+
+    const result = await this.courseParticipantsRepository.delete(id);
+
+    return result.affected > 0;
   }
 }
