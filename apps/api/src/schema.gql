@@ -27,6 +27,14 @@ type Course {
   updatedAt: DateTime!
 }
 
+type CourseParticipant {
+  courseId: String!
+  id: String!
+  joinedAt: DateTime!
+  role: RoleEnum!
+  userId: String!
+}
+
 input CreateAssignmentInput {
   attachements: [Upload!]
   courseId: String!
@@ -41,6 +49,11 @@ input CreateCourseInput {
   room: String
   section: String
   subject: String
+}
+
+input CreateCourseParticipantInput {
+  courseId: String!
+  role: RoleEnum! = PARTICIPANT
 }
 
 input CreateLocalProviderInput {
@@ -81,11 +94,13 @@ type LocalProvider {
 type Mutation {
   createAssignment(createAssignmentInput: CreateAssignmentInput!): Assignment!
   createCourse(createCourseInput: CreateCourseInput!): Course!
+  createCourseParticipant(createCourseParticipantInput: CreateCourseParticipantInput!): CourseParticipant!
   createLocalProvider(createLocalProviderInput: CreateLocalProviderInput!): LocalProvider!
   createUser(createUserInput: CreateUserInput!): User!
   getCurrentUser: User!
   removeAssignment(id: String!): Assignment!
   removeCourse(id: String!): Course!
+  removeCourseParticipant(id: String!): Boolean!
   removeLocalProvider(id: String!): LocalProvider!
   removeUser(id: String!): User!
   requestPasswordReset(requestResetPasswordInput: RequestResetPasswordInput!): RequestResetPasswordResult!
@@ -95,6 +110,7 @@ type Mutation {
   updateAssignment(updateAssignmentInput: UpdateAssignmentInput!): Assignment!
   updateAvatar(updateAvatarInput: UpdateAvatarInput!): User!
   updateCourse(updateCourseInput: UpdateCourseInput!): Course!
+  updateCourseParticipant(updateCourseParticipantInput: UpdateCourseParticipantInput!): CourseParticipant!
   updateLocalProvider(updateLocalProviderInput: UpdateLocalProviderInput!): LocalProvider!
   updateUser(updateUserInput: UpdateUserInput!): User!
   uploadFile(uploadFileInput: UploadFileInput!): File!
@@ -105,6 +121,8 @@ type Query {
   Courses: [Course!]!
   assignment(id: String!): Assignment!
   assignments: [Assignment!]!
+  courseParticipant(id: String!): CourseParticipant
+  courseParticipants: [CourseParticipant!]!
   localProvider(id: String!): LocalProvider!
   localProviders: [LocalProvider!]!
   user(id: String!): User!
@@ -128,6 +146,11 @@ input ResetPasswordInput {
 type ResetPasswordResult {
   message: String
   success: Boolean!
+}
+
+enum RoleEnum {
+  OWNER
+  PARTICIPANT
 }
 
 input SignInInput {
@@ -167,6 +190,11 @@ input UpdateCourseInput {
   room: String
   section: String
   subject: String
+}
+
+input UpdateCourseParticipantInput {
+  id: String!
+  role: RoleEnum = PARTICIPANT
 }
 
 input UpdateLocalProviderInput {

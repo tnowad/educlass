@@ -15,6 +15,7 @@ import { CacheModule } from '@nestjs/cache-manager';
 import { CoursesModule } from './courses/courses.module';
 import { NestMinioModule } from 'nestjs-minio';
 import { FilesModule } from './files/files.module';
+import { CourseParticipantsModule } from './course-participants/course-participants.module';
 import { AssignmentsModule } from './assignments/assignments.module';
 import appConfig from './config/app.config';
 import mailConfig from './mail/config/mail-config';
@@ -78,6 +79,7 @@ import databaseConfig from './common/config/database-config';
     MailModule,
     CoursesModule,
     FilesModule,
+    CourseParticipantsModule,
     AssignmentsModule,
   ],
 })

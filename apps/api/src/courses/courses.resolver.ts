@@ -5,6 +5,8 @@ import { UpdateCourseInput } from './dto/update-course.input';
 import { Course } from 'src/courses/entities/course.entity';
 import { UseGuards } from '@nestjs/common';
 import { GqlAuthGuard } from 'src/auth/graphql-auth.guard';
+import { CurrentUser } from 'src/auth/decorators/user.decorator';
+import { User } from 'src/users/entities/user.entity';
 
 @Resolver(() => Course)
 export class CoursesResolver {
@@ -14,8 +16,12 @@ export class CoursesResolver {
   @UseGuards(GqlAuthGuard)
   async createCourse(
     @Args('createCourseInput') createCourseInput: CreateCourseInput,
+    @CurrentUser() user: User,
   ) {
-    return this.coursesService.create(createCourseInput);
+    return this.coursesService.create({
+      ...createCourseInput,
+      userId: user.id,
+    });
   }
 
   @Query(() => [Course], { name: 'Courses' })
