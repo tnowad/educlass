@@ -5,14 +5,10 @@ import {
   Entity,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { CourseRole } from '../dto/role.enum';
 
-export enum RoleEnum {
-  OWNER = 'OWNER',
-  PARTICIPANT = 'PARTICIPANT',
-}
-
-registerEnumType(RoleEnum, {
-  name: 'RoleEnum',
+registerEnumType(CourseRole, {
+  name: 'CourseRole',
 });
 
 @ObjectType()
@@ -30,9 +26,9 @@ export class CourseParticipant {
   @Column({ name: 'course_id', type: 'varchar', length: 255 })
   courseId: string;
 
-  @Field(() => RoleEnum)
-  @Column({ name: 'role', type: 'enum', enum: RoleEnum })
-  role: RoleEnum;
+  @Field(() => CourseRole)
+  @Column({ name: 'role', type: 'enum', enum: CourseRole })
+  role: CourseRole;
 
   @Field()
   @CreateDateColumn({ name: 'joined_at' })

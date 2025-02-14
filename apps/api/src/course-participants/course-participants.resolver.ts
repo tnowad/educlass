@@ -1,4 +1,4 @@
-import { Resolver, Query, Mutation, Args } from '@nestjs/graphql';
+import { Resolver, Query, Mutation, Args, Context } from '@nestjs/graphql';
 import { CourseParticipantsService } from './course-participants.service';
 import { CourseParticipant } from './entities/course-participant.entity';
 import { CreateCourseParticipantInput } from './dto/create-course-participant.input';
@@ -7,6 +7,9 @@ import { UseGuards } from '@nestjs/common';
 import { GqlAuthGuard } from 'src/auth/graphql-auth.guard';
 import { CurrentUser } from 'src/auth/decorators/user.decorator';
 import { User } from 'src/users/entities/user.entity';
+import { CourseRolesGuard } from './course-roles.guard';
+import { CourseRoles } from './decorators/role.decorator';
+import { CourseRole } from './dto/role.enum';
 
 @Resolver(() => CourseParticipant)
 export class CourseParticipantsResolver {
@@ -39,21 +42,45 @@ export class CourseParticipantsResolver {
     return this.courseParticipantsService.findOne(id);
   }
 
-  @UseGuards(GqlAuthGuard)
+  @UseGuards(GqlAuthGuard, CourseRolesGuard)
+  @CourseRoles(
+    CourseRole.OWNER,
+    CourseRole.CO_OWNER,
+    CourseRole.PARTICIPANT,
+    CourseRole.GUEST,
+  )
   @Mutation(() => CourseParticipant)
   async updateCourseParticipant(
     @Args('updateCourseParticipantInput')
     updateCourseParticipantInput: UpdateCourseParticipantInput,
+    @Context() context: any,
+    @CurrentUser() user: User,
   ): Promise<CourseParticipant> {
     return this.courseParticipantsService.update(
       updateCourseParticipantInput.id,
       updateCourseParticipantInput,
+      user.id,
+      context.req.courseRole,
     );
   }
 
-  @UseGuards(GqlAuthGuard)
+  @UseGuards(GqlAuthGuard, CourseRolesGuard)
+  @CourseRoles(
+    CourseRole.OWNER,
+    CourseRole.CO_OWNER,
+    CourseRole.PARTICIPANT,
+    CourseRole.GUEST,
+  )
   @Mutation(() => Boolean)
-  async removeCourseParticipant(@Args('id') id: string): Promise<boolean> {
-    return this.courseParticipantsService.remove(id);
+  async removeCourseParticipant(
+    @Args('id') id: string,
+    @Context() context: any,
+    @CurrentUser() user: User,
+  ): Promise<boolean> {
+    return this.courseParticipantsService.remove(
+      id,
+      user.id,
+      context.req.courseRole,
+    );
   }
 }
