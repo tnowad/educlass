@@ -1,5 +1,6 @@
 import { ObjectType, Field } from '@nestjs/graphql';
 import { Assignment } from 'src/assignments/entities/assignment.entity';
+import { Submission } from 'src/submissions/entities/submission.entity';
 import { User } from 'src/users/entities/user.entity';
 import {
   Column,
@@ -54,4 +55,9 @@ export class File {
   @ManyToOne(() => Assignment, (assignment) => assignment.attachements)
   @JoinColumn({ name: 'assignment_id' })
   assignment: Assignment;
+
+  @Field(() => Submission, { nullable: true })
+  @ManyToOne(() => Submission, (submission) => submission.attachements)
+  @JoinColumn({ name: 'submission_id' })
+  submission: Submission;
 }

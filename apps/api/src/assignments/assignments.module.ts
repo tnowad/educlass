@@ -9,5 +9,6 @@ import { FilesModule } from 'src/files/files.module';
 @Module({
   imports: [TypeOrmModule.forFeature([Assignment]), CoursesModule, FilesModule],
   providers: [AssignmentsResolver, AssignmentsService],
+  exports: [AssignmentsService],
 })
 export class AssignmentsModule {}
