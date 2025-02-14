@@ -1,12 +1,14 @@
 import { ObjectType, Field } from '@nestjs/graphql';
 import { File } from 'src/files/entities/file.entity';
 import { LocalProvider } from 'src/local-providers/entities/local-provider.entity';
+import { Submission } from 'src/submissions/entities/submission.entity';
 import {
   Column,
   CreateDateColumn,
   Entity,
   Index,
   JoinColumn,
+  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -65,4 +67,8 @@ export class User {
     foreignKeyConstraintName: 'FK_avatar_user',
   })
   avatar: File;
+
+  @Field(() => [Submission], { nullable: true })
+  @OneToMany(() => Submission, (submission) => submission.user)
+  submissions: Submission[];
 }

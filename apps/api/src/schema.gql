@@ -10,6 +10,7 @@ type Assignment {
   dueDate: DateTime
   id: String!
   startDate: DateTime
+  submission: Submission
   title: String!
   updatedAt: DateTime!
 }
@@ -66,6 +67,13 @@ input CreateLocalProviderInput {
   password: String!
 }
 
+input CreateSubmissionInput {
+  assignmentId: String!
+  attachements: [Upload!]
+  content: String!
+  score: Float!
+}
+
 input CreateUserInput {
   email: String!
   emailVerified: Boolean
@@ -84,6 +92,7 @@ type File {
   id: String!
   mimetype: String
   objectName: String!
+  submission: Submission
   updatedAt: DateTime!
   url: String
   user: User
@@ -102,12 +111,14 @@ type Mutation {
   createCourse(createCourseInput: CreateCourseInput!): Course!
   createCourseParticipant(createCourseParticipantInput: CreateCourseParticipantInput!): CourseParticipant!
   createLocalProvider(createLocalProviderInput: CreateLocalProviderInput!): LocalProvider!
+  createSubmission(createSubmissionInput: CreateSubmissionInput!): Submission!
   createUser(createUserInput: CreateUserInput!): User!
   getCurrentUser: User!
   removeAssignment(id: String!): Assignment!
   removeCourse(id: String!): Course!
   removeCourseParticipant(id: String!): Boolean!
   removeLocalProvider(id: String!): LocalProvider!
+  removeSubmission(id: String!): Submission!
   removeUser(id: String!): User!
   requestPasswordReset(requestResetPasswordInput: RequestResetPasswordInput!): RequestResetPasswordResult!
   resetPassword(resetPasswordInput: ResetPasswordInput!): ResetPasswordResult!
@@ -118,6 +129,7 @@ type Mutation {
   updateCourse(updateCourseInput: UpdateCourseInput!): Course!
   updateCourseParticipant(updateCourseParticipantInput: UpdateCourseParticipantInput!): CourseParticipant!
   updateLocalProvider(updateLocalProviderInput: UpdateLocalProviderInput!): LocalProvider!
+  updateSubmission(updateSubmissionInput: UpdateSubmissionInput!): Submission!
   updateUser(updateUserInput: UpdateUserInput!): User!
   uploadFile(uploadFileInput: UploadFileInput!): File!
 }
@@ -131,6 +143,8 @@ type Query {
   courseParticipants: [CourseParticipant!]!
   localProvider(id: String!): LocalProvider!
   localProviders: [LocalProvider!]!
+  submission(id: String!): Submission!
+  submissions: [Submission!]!
   user(id: String!): User!
   users: [User!]!
 }
@@ -163,6 +177,18 @@ input SignUpInput {
   email: String!
   name: String!
   password: String!
+}
+
+type Submission {
+  assignment: Assignment!
+  attachements: [File!]!
+  content: String!
+  createdAt: DateTime!
+  id: String!
+  score: Float
+  submittedAt: DateTime
+  updatedAt: DateTime!
+  user: User!
 }
 
 type TokensResult {
@@ -203,6 +229,15 @@ input UpdateLocalProviderInput {
   password: String
 }
 
+input UpdateSubmissionInput {
+  assignmentId: String
+  attachements: [Upload!]
+  content: String
+  id: String!
+  removeAttachements: [String!]
+  score: Float
+}
+
 input UpdateUserInput {
   email: String
   emailVerified: Boolean
@@ -225,5 +260,6 @@ type User {
   id: String!
   localProvider: LocalProvider
   name: String!
+  submissions: [Submission!]
   updatedAt: DateTime!
 }

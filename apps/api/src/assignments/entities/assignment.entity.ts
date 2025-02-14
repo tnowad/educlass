@@ -1,6 +1,7 @@
 import { ObjectType, Field } from '@nestjs/graphql';
 import { Course } from 'src/courses/entities/course.entity';
 import { File } from 'src/files/entities/file.entity';
+import { Submission } from 'src/submissions/entities/submission.entity';
 import {
   Column,
   CreateDateColumn,
@@ -8,6 +9,7 @@ import {
   JoinColumn,
   ManyToOne,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -53,4 +55,10 @@ export class Assignment {
   @Field(() => [File])
   @OneToMany(() => File, (file) => file.assignment)
   attachements: File[];
+
+  @Field(() => Submission, { nullable: true })
+  @OneToOne(() => Submission, (submission) => submission.assignment, {
+    onDelete: 'CASCADE',
+  })
+  submission: Submission;
 }
