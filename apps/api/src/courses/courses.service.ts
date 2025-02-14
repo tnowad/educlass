@@ -5,10 +5,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Course } from './entities/course.entity';
 import { Repository } from 'typeorm';
 import * as crypto from 'crypto';
-import {
-  CourseParticipant,
-  RoleEnum,
-} from 'src/course-participants/entities/course-participant.entity';
+import { CourseParticipant } from 'src/course-participants/entities/course-participant.entity';
+import { CourseRole } from 'src/course-participants/dto/role.enum';
 
 @Injectable()
 export class CoursesService {
@@ -39,7 +37,7 @@ export class CoursesService {
     const courseParticipant = this.courseParticipantsRepository.create({
       userId: createCourseInput.userId,
       courseId: savedCourse.id,
-      role: RoleEnum.OWNER,
+      role: CourseRole.OWNER,
     });
 
     await this.courseParticipantsRepository.save(courseParticipant);

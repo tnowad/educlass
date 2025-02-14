@@ -31,8 +31,15 @@ type CourseParticipant {
   courseId: String!
   id: String!
   joinedAt: DateTime!
-  role: RoleEnum!
+  role: CourseRole!
   userId: String!
+}
+
+enum CourseRole {
+  CO_OWNER
+  GUEST
+  OWNER
+  PARTICIPANT
 }
 
 input CreateAssignmentInput {
@@ -53,7 +60,7 @@ input CreateCourseInput {
 
 input CreateCourseParticipantInput {
   courseId: String!
-  role: RoleEnum! = PARTICIPANT
+  role: CourseRole! = PARTICIPANT
 }
 
 input CreateLocalProviderInput {
@@ -148,11 +155,6 @@ type ResetPasswordResult {
   success: Boolean!
 }
 
-enum RoleEnum {
-  OWNER
-  PARTICIPANT
-}
-
 input SignInInput {
   email: String!
   password: String!
@@ -194,7 +196,7 @@ input UpdateCourseInput {
 
 input UpdateCourseParticipantInput {
   id: String!
-  role: RoleEnum = PARTICIPANT
+  role: CourseRole = PARTICIPANT
 }
 
 input UpdateLocalProviderInput {
