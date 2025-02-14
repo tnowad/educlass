@@ -32,7 +32,7 @@ jobs:
             Take a look at the changes here: [View Changes](${{ github.event.pull_request.html_url }}/files)
 
       - name: PR Review Notification
-        if: github.event_name == 'pull_request_review' && contains(['COMMENTED', 'CHANGES_REQUESTED', 'APPROVED'], github.event.review.state)
+        if: github.event_name == 'pull_request_review' && github.event.review.state != 'approved'
         uses: appleboy/telegram-action@master
         with:
           to: "${{ secrets.TELEGRAM_CHAT_ID }}"
