@@ -37,7 +37,6 @@ type CourseParticipant {
 
 enum CourseRole {
   CO_OWNER
-  GUEST
   OWNER
   PARTICIPANT
 }
