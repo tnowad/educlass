@@ -6,6 +6,7 @@ import { UpdateCourseParticipantInput } from './dto/update-course-participant.in
 import { UseGuards } from '@nestjs/common';
 import { GqlAuthGuard } from 'src/auth/graphql-auth.guard';
 import { CurrentUser } from 'src/auth/decorators/user.decorator';
+import { User } from 'src/users/entities/user.entity';
 
 @Resolver(() => CourseParticipant)
 export class CourseParticipantsResolver {
@@ -18,11 +19,11 @@ export class CourseParticipantsResolver {
   async createCourseParticipant(
     @Args('createCourseParticipantInput')
     createCourseParticipantInput: CreateCourseParticipantInput,
-    @CurrentUser() user: any,
+    @CurrentUser() user: User,
   ): Promise<CourseParticipant> {
     return this.courseParticipantsService.create({
       ...createCourseParticipantInput,
-      userId: user.userId,
+      userId: user.id,
     });
   }
 
@@ -43,12 +44,12 @@ export class CourseParticipantsResolver {
   async updateCourseParticipant(
     @Args('updateCourseParticipantInput')
     updateCourseParticipantInput: UpdateCourseParticipantInput,
-    @CurrentUser() user: any,
+    @CurrentUser() user: User,
   ): Promise<CourseParticipant> {
     return this.courseParticipantsService.update(
       updateCourseParticipantInput.id,
       updateCourseParticipantInput,
-      user.userId,
+      user.id,
     );
   }
 
@@ -56,8 +57,8 @@ export class CourseParticipantsResolver {
   @Mutation(() => Boolean)
   async removeCourseParticipant(
     @Args('id') id: string,
-    @CurrentUser() user: any,
+    @CurrentUser() user: User,
   ): Promise<boolean> {
-    return this.courseParticipantsService.remove(id, user.userId);
+    return this.courseParticipantsService.remove(id, user.id);
   }
 }
