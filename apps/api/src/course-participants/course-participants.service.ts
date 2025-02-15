@@ -57,60 +57,77 @@ export class CourseParticipantsService {
     return courseParticipant;
   }
 
-  async findByUserAndCourse(
+  async getUserRoleInCourse(
     userId: string,
     courseId: string,
-  ): Promise<CourseParticipant> {
-    return this.courseParticipantsRepository.findOne({
+  ): Promise<CourseRole | null> {
+    const participant = await this.courseParticipantsRepository.findOne({
       where: { userId, courseId },
     });
+    console.log('participant', participant);
+    return participant ? participant.role : null;
   }
 
   async update(
     id: string,
     updateCourseParticipantInput: UpdateCourseParticipantInput,
     userId: string,
-    userRole: CourseRole,
   ): Promise<CourseParticipant> {
-    const courseParticipant = await this.courseParticipantsRepository.findOne({
-      where: { id },
-    });
+    const courseParticipant = await this.findOne(id);
+    console.log(courseParticipant);
 
     if (!courseParticipant) {
       throw new NotFoundException(`CourseParticipant with ID ${id} not found`);
     }
 
-    if (userRole === CourseRole.PARTICIPANT || userRole === CourseRole.GUEST) {
-      if (userId !== courseParticipant.userId) {
-        throw new ForbiddenException('You can only update your own role');
+    const userRole = await this.getUserRoleInCourse(
+      userId,
+      courseParticipant.courseId,
+    );
+    console.log(userId);
+
+    if (!userRole) {
+      throw new ForbiddenException('You are not part of this course');
+    }
+
+    if (userRole === CourseRole.PARTICIPANT) {
+      throw new ForbiddenException('Participants cannot update roles');
+    }
+
+    if (userRole === CourseRole.CO_OWNER) {
+      if (courseParticipant.role !== CourseRole.PARTICIPANT) {
+        throw new ForbiddenException('Co-Owners can only update Participants');
       }
     }
 
     Object.assign(courseParticipant, updateCourseParticipantInput);
     return this.courseParticipantsRepository.save(courseParticipant);
   }
-
-  async remove(
-    id: string,
-    userId: string,
-    userRole: CourseRole,
-  ): Promise<boolean> {
-    const courseParticipant = await this.courseParticipantsRepository.findOne({
-      where: { id },
-    });
+  async remove(id: string, userId: string): Promise<boolean> {
+    const courseParticipant = await this.findOne(id);
 
     if (!courseParticipant) {
       throw new NotFoundException(`CourseParticipant with ID ${id} not found`);
     }
 
-    if (courseParticipant.role === CourseRole.OWNER) {
-      throw new ForbiddenException(`Cannot remove the course owner`);
+    const userRole = await this.getUserRoleInCourse(
+      userId,
+      courseParticipant.courseId,
+    );
+
+    if (!userRole) {
+      throw new ForbiddenException('You are not part of this course');
     }
 
-    if (userRole === CourseRole.PARTICIPANT || userRole === CourseRole.GUEST) {
-      if (userId !== courseParticipant.userId) {
-        throw new ForbiddenException('You can only remove yourself');
-      }
+    if (courseParticipant.role === CourseRole.OWNER) {
+      throw new ForbiddenException('Cannot remove the course owner');
+    }
+
+    if (
+      userRole === CourseRole.PARTICIPANT &&
+      userId !== courseParticipant.userId
+    ) {
+      throw new ForbiddenException('You can only remove yourself');
     }
 
     if (
