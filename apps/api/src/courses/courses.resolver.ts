@@ -6,7 +6,6 @@ import { Course } from 'src/courses/entities/course.entity';
 import { UseGuards } from '@nestjs/common';
 import { GqlAuthGuard } from 'src/auth/graphql-auth.guard';
 import { CurrentUser } from 'src/auth/decorators/user.decorator';
-import { User } from 'src/users/entities/user.entity';
 
 @Resolver(() => Course)
 export class CoursesResolver {
@@ -16,11 +15,12 @@ export class CoursesResolver {
   @UseGuards(GqlAuthGuard)
   async createCourse(
     @Args('createCourseInput') createCourseInput: CreateCourseInput,
-    @CurrentUser() user: User,
+    @CurrentUser() user: any,
   ) {
+    console.log('user', user);
     return this.coursesService.create({
       ...createCourseInput,
-      userId: user.id,
+      userId: user.userId,
     });
   }
 

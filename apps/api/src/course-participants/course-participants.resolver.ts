@@ -1,4 +1,4 @@
-import { Resolver, Query, Mutation, Args, Context } from '@nestjs/graphql';
+import { Resolver, Query, Mutation, Args } from '@nestjs/graphql';
 import { CourseParticipantsService } from './course-participants.service';
 import { CourseParticipant } from './entities/course-participant.entity';
 import { CreateCourseParticipantInput } from './dto/create-course-participant.input';
@@ -6,10 +6,6 @@ import { UpdateCourseParticipantInput } from './dto/update-course-participant.in
 import { UseGuards } from '@nestjs/common';
 import { GqlAuthGuard } from 'src/auth/graphql-auth.guard';
 import { CurrentUser } from 'src/auth/decorators/user.decorator';
-import { User } from 'src/users/entities/user.entity';
-import { CourseRolesGuard } from './course-roles.guard';
-import { CourseRoles } from './decorators/role.decorator';
-import { CourseRole } from './dto/role.enum';
 
 @Resolver(() => CourseParticipant)
 export class CourseParticipantsResolver {
@@ -22,11 +18,11 @@ export class CourseParticipantsResolver {
   async createCourseParticipant(
     @Args('createCourseParticipantInput')
     createCourseParticipantInput: CreateCourseParticipantInput,
-    @CurrentUser() user: User,
+    @CurrentUser() user: any,
   ): Promise<CourseParticipant> {
     return this.courseParticipantsService.create({
       ...createCourseParticipantInput,
-      userId: user.id,
+      userId: user.userId,
     });
   }
 
@@ -42,45 +38,26 @@ export class CourseParticipantsResolver {
     return this.courseParticipantsService.findOne(id);
   }
 
-  @UseGuards(GqlAuthGuard, CourseRolesGuard)
-  @CourseRoles(
-    CourseRole.OWNER,
-    CourseRole.CO_OWNER,
-    CourseRole.PARTICIPANT,
-    CourseRole.GUEST,
-  )
+  @UseGuards(GqlAuthGuard)
   @Mutation(() => CourseParticipant)
   async updateCourseParticipant(
     @Args('updateCourseParticipantInput')
     updateCourseParticipantInput: UpdateCourseParticipantInput,
-    @Context() context: any,
-    @CurrentUser() user: User,
+    @CurrentUser() user: any,
   ): Promise<CourseParticipant> {
     return this.courseParticipantsService.update(
       updateCourseParticipantInput.id,
       updateCourseParticipantInput,
-      user.id,
-      context.req.courseRole,
+      user.userId,
     );
   }
 
-  @UseGuards(GqlAuthGuard, CourseRolesGuard)
-  @CourseRoles(
-    CourseRole.OWNER,
-    CourseRole.CO_OWNER,
-    CourseRole.PARTICIPANT,
-    CourseRole.GUEST,
-  )
+  @UseGuards(GqlAuthGuard)
   @Mutation(() => Boolean)
   async removeCourseParticipant(
     @Args('id') id: string,
-    @Context() context: any,
-    @CurrentUser() user: User,
+    @CurrentUser() user: any,
   ): Promise<boolean> {
-    return this.courseParticipantsService.remove(
-      id,
-      user.id,
-      context.req.courseRole,
-    );
+    return this.courseParticipantsService.remove(id, user.userId);
   }
 }

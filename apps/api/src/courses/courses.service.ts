@@ -33,6 +33,7 @@ export class CoursesService {
     });
 
     const savedCourse = await this.coursesRepository.save(newCourse);
+    console.log('userId', createCourseInput.userId);
 
     const courseParticipant = this.courseParticipantsRepository.create({
       userId: createCourseInput.userId,
