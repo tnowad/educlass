@@ -44,16 +44,21 @@ export class CourseParticipantsResolver {
   async updateCourseParticipant(
     @Args('updateCourseParticipantInput')
     updateCourseParticipantInput: UpdateCourseParticipantInput,
+    @CurrentUser() user: User,
   ): Promise<CourseParticipant> {
     return this.courseParticipantsService.update(
       updateCourseParticipantInput.id,
       updateCourseParticipantInput,
+      user.id,
     );
   }
 
   @UseGuards(GqlAuthGuard)
   @Mutation(() => Boolean)
-  async removeCourseParticipant(@Args('id') id: string): Promise<boolean> {
-    return this.courseParticipantsService.remove(id);
+  async removeCourseParticipant(
+    @Args('id') id: string,
+    @CurrentUser() user: User,
+  ): Promise<boolean> {
+    return this.courseParticipantsService.remove(id, user.id);
   }
 }

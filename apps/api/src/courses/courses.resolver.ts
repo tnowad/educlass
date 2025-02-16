@@ -18,6 +18,7 @@ export class CoursesResolver {
     @Args('createCourseInput') createCourseInput: CreateCourseInput,
     @CurrentUser() user: User,
   ) {
+    console.log('user', user);
     return this.coursesService.create({
       ...createCourseInput,
       userId: user.id,
