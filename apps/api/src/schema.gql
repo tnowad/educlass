@@ -21,6 +21,7 @@ type Course {
   id: String!
   inviteLink: String!
   name: String!
+  posts: [Post!]
   room: String
   section: String
   subject: String
@@ -66,6 +67,14 @@ input CreateLocalProviderInput {
   password: String!
 }
 
+input CreatePostInput {
+  audience: audience_enum
+  authorId: String!
+  content: String!
+  courseId: String!
+  status: post_status_enum
+}
+
 input CreateUserInput {
   email: String!
   emailVerified: Boolean
@@ -102,7 +111,9 @@ type Mutation {
   createCourse(createCourseInput: CreateCourseInput!): Course!
   createCourseParticipant(createCourseParticipantInput: CreateCourseParticipantInput!): CourseParticipant!
   createLocalProvider(createLocalProviderInput: CreateLocalProviderInput!): LocalProvider!
+  createPost(createPostInput: CreatePostInput!): Post!
   createUser(createUserInput: CreateUserInput!): User!
+  deletePost(id: String!): Boolean!
   getCurrentUser: User!
   removeAssignment(id: String!): Assignment!
   removeCourse(id: String!): Course!
@@ -118,8 +129,20 @@ type Mutation {
   updateCourse(updateCourseInput: UpdateCourseInput!): Course!
   updateCourseParticipant(updateCourseParticipantInput: UpdateCourseParticipantInput!): CourseParticipant!
   updateLocalProvider(updateLocalProviderInput: UpdateLocalProviderInput!): LocalProvider!
+  updatePost(id: String!, updatePostInput: UpdatePostInput!): Post!
   updateUser(updateUserInput: UpdateUserInput!): User!
   uploadFile(uploadFileInput: UploadFileInput!): File!
+}
+
+type Post {
+  audience: audience_enum!
+  author: User!
+  content: String!
+  course: Course!
+  createdAt: DateTime!
+  id: String!
+  status: post_status_enum!
+  updatedAt: DateTime!
 }
 
 type Query {
@@ -129,6 +152,8 @@ type Query {
   assignments: [Assignment!]!
   courseParticipant(id: String!): CourseParticipant
   courseParticipants: [CourseParticipant!]!
+  findAllPosts: [Post!]!
+  findPostById(id: String!): Post!
   localProvider(id: String!): LocalProvider!
   localProviders: [LocalProvider!]!
   user(id: String!): User!
@@ -203,6 +228,14 @@ input UpdateLocalProviderInput {
   password: String
 }
 
+input UpdatePostInput {
+  audience: audience_enum
+  authorId: String
+  content: String
+  courseId: String
+  status: post_status_enum
+}
+
 input UpdateUserInput {
   email: String
   emailVerified: Boolean
@@ -225,5 +258,20 @@ type User {
   id: String!
   localProvider: LocalProvider
   name: String!
+  posts: [Post!]
   updatedAt: DateTime!
+}
+
+"""Audience visibility of a post"""
+enum audience_enum {
+  PRIVATE
+  PUBLIC
+  RESTRICTED
+}
+
+"""Status of a post"""
+enum post_status_enum {
+  ARCHIVED
+  DRAFT
+  PUBLISHED
 }
