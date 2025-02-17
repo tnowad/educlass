@@ -1,3 +1,4 @@
+import { Post } from 'src/posts/entities/post.entity';
 import { ObjectType, Field } from '@nestjs/graphql';
 import { File } from 'src/files/entities/file.entity';
 import { LocalProvider } from 'src/local-providers/entities/local-provider.entity';
@@ -7,6 +8,7 @@ import {
   Entity,
   Index,
   JoinColumn,
+  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -65,4 +67,8 @@ export class User {
     foreignKeyConstraintName: 'FK_avatar_user',
   })
   avatar: File;
+
+  @Field(() => [Post], { nullable: true })
+  @OneToMany(() => Post, (post) => post.author, { cascade: true })
+  posts: Post[];
 }

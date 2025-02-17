@@ -21,6 +21,7 @@ import appConfig from './config/app.config';
 import mailConfig from './mail/config/mail-config';
 import minioConfig from './files/config/minio-config';
 import { AllConfigType } from './config/app.type';
+import { PostsModule } from './posts/posts.module';
 import databaseConfig from './common/config/database-config';
 
 @Module({
@@ -81,6 +82,7 @@ import databaseConfig from './common/config/database-config';
     FilesModule,
     CourseParticipantsModule,
     AssignmentsModule,
+    PostsModule,
   ],
 })
 export class AppModule {}
