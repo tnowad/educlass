@@ -69,7 +69,6 @@ input CreateLocalProviderInput {
 
 input CreatePostInput {
   audience: audience_enum
-  authorId: String!
   content: String!
   courseId: String!
   status: post_status_enum
@@ -230,7 +229,6 @@ input UpdateLocalProviderInput {
 
 input UpdatePostInput {
   audience: audience_enum
-  authorId: String
   content: String
   courseId: String
   status: post_status_enum

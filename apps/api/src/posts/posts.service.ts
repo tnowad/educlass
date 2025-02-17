@@ -20,7 +20,9 @@ export class PostsService {
     private readonly courseRepository: Repository<Course>,
   ) {}
 
-  async create(createPostInput: CreatePostInput): Promise<Post> {
+  async create(
+    createPostInput: CreatePostInput & { authorId: string },
+  ): Promise<Post> {
     const { authorId, courseId, ...rest } = createPostInput;
 
     const author = await this.userRepository.findOne({

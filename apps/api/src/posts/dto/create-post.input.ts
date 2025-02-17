@@ -1,19 +1,9 @@
 import { Field, InputType } from '@nestjs/graphql';
-import {
-  IsEnum,
-  IsNotEmpty,
-  IsOptional,
-  IsString,
-  IsUUID,
-} from 'class-validator';
+import { IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import { AudienceEnum, PostStatusEnum } from '../entities/post.entity';
 
 @InputType()
 export class CreatePostInput {
-  @Field()
-  @IsUUID()
-  authorId: string;
-
   @Field()
   @IsString()
   courseId: string;
