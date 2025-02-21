@@ -57,6 +57,21 @@ export class CourseParticipantsService {
     return courseParticipant;
   }
 
+  async findOwnerByCourseIdAndUserId(
+    courseId: string,
+    userId: string,
+  ): Promise<CourseParticipant | null> {
+    const owner = await this.courseParticipantsRepository.findOne({
+      where: {
+        courseId,
+        userId,
+        role: CourseRole.OWNER,
+      },
+    });
+
+    return owner;
+  }
+
   async getUserRoleInCourse(
     userId: string,
     courseId: string,
