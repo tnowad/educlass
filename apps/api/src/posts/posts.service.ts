@@ -6,12 +6,12 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Post } from 'src/posts/entities/post.entity';
-import { User } from 'src/users/entities/user.entity';
-import { Course } from 'src/courses/entities/course.entity';
 import { CreatePostInput } from './dto/create-post.input';
 import { UpdatePostInput } from './dto/update-post.input';
-import { CourseParticipant } from 'src/course-participants/entities/course-participant.entity';
 import { CourseRole } from 'src/course-participants/dto/role.enum';
+import { CourseParticipantsService } from 'src/course-participants/course-participants.service';
+import { UsersService } from 'src/users/users.service';
+import { CoursesService } from 'src/courses/courses.service';
 
 @Injectable()
 export class PostsService {
@@ -19,14 +19,11 @@ export class PostsService {
     @InjectRepository(Post)
     private readonly postRepository: Repository<Post>,
 
-    @InjectRepository(User)
-    private readonly userRepository: Repository<User>,
+    private readonly usersService: UsersService,
 
-    @InjectRepository(Course)
-    private readonly courseRepository: Repository<Course>,
+    private readonly coursesService: CoursesService,
 
-    @InjectRepository(CourseParticipant)
-    private readonly courseParticipantRepository: Repository<CourseParticipant>,
+    private readonly courseParticipantService: CourseParticipantsService,
   ) {}
 
   async create(
@@ -34,20 +31,16 @@ export class PostsService {
   ): Promise<Post> {
     const { authorId, courseId, ...rest } = createPostInput;
 
-    const author = await this.userRepository.findOne({
-      where: {
-        id: authorId,
-      },
-    });
+    const author = await this.usersService.findOne(authorId);
 
     if (!author) {
       throw new NotFoundException(`User with ${authorId} not found`);
     }
-    const courseParticipant = await this.courseParticipantRepository.findOne({
-      where: {
-        userId: authorId,
-      },
-    });
+    const courseParticipant =
+      await this.courseParticipantService.findOwnerByCourseIdAndUserId(
+        courseId,
+        authorId,
+      );
 
     if (!courseParticipant) {
       throw new NotFoundException(`User not exist in a course`);
@@ -57,12 +50,7 @@ export class PostsService {
       throw new ForbiddenException('Only owners can create posts');
     }
 
-    const course = await this.courseRepository.findOne({
-      where: {
-        id: courseId,
-      },
-    });
-
+    const course = await this.coursesService.findOne(courseId);
     if (!course) {
       throw new NotFoundException(`Course with ${courseId} not found`);
     }
@@ -92,13 +80,13 @@ export class PostsService {
     id: string,
     updatePostInput: UpdatePostInput & { authorId: string },
   ): Promise<Post> {
-    const { authorId, ...rest } = updatePostInput;
+    const { authorId, courseId, ...rest } = updatePostInput;
 
-    const courseParticipant = await this.courseParticipantRepository.findOne({
-      where: {
-        userId: authorId,
-      },
-    });
+    const courseParticipant =
+      await this.courseParticipantService.findOwnerByCourseIdAndUserId(
+        courseId,
+        authorId,
+      );
 
     if (!courseParticipant) {
       throw new NotFoundException(`User not exist in a course`);
@@ -114,11 +102,19 @@ export class PostsService {
   }
 
   async remove(id: string, authorId: string): Promise<boolean> {
-    const courseParticipant = await this.courseParticipantRepository.findOne({
+    const post = await this.postRepository.findOne({
       where: {
-        userId: authorId,
+        id,
       },
     });
+    if (!post) {
+      throw new NotFoundException('Post not found');
+    }
+    const courseParticipant =
+      await this.courseParticipantService.findOwnerByCourseIdAndUserId(
+        post.course.id,
+        authorId,
+      );
 
     if (!courseParticipant) {
       throw new NotFoundException(`User not exist in a course`);
