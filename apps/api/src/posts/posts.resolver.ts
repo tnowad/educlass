@@ -36,13 +36,20 @@ export class PostsResolver {
   async updatePost(
     @Args('id') id: string,
     @Args('updatePostInput') updatePostInput: UpdatePostInput,
+    @CurrentUser() user: User,
   ): Promise<Post> {
-    return this.postService.update(id, updatePostInput);
+    return this.postService.update(id, {
+      ...updatePostInput,
+      authorId: user.id,
+    });
   }
 
   @Mutation(() => Boolean)
   @UseGuards(GqlAuthGuard)
-  async deletePost(@Args('id') id: string): Promise<boolean> {
-    return this.postService.remove(id);
+  async deletePost(
+    @Args('id') id: string,
+    @CurrentUser() user: User,
+  ): Promise<boolean> {
+    return this.postService.remove(id, user.id);
   }
 }

@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Post } from 'src/posts/entities/post.entity';
@@ -6,6 +10,8 @@ import { User } from 'src/users/entities/user.entity';
 import { Course } from 'src/courses/entities/course.entity';
 import { CreatePostInput } from './dto/create-post.input';
 import { UpdatePostInput } from './dto/update-post.input';
+import { CourseParticipant } from 'src/course-participants/entities/course-participant.entity';
+import { CourseRole } from 'src/course-participants/dto/role.enum';
 
 @Injectable()
 export class PostsService {
@@ -18,6 +24,9 @@ export class PostsService {
 
     @InjectRepository(Course)
     private readonly courseRepository: Repository<Course>,
+
+    @InjectRepository(CourseParticipant)
+    private readonly courseParticipantRepository: Repository<CourseParticipant>,
   ) {}
 
   async create(
@@ -33,6 +42,19 @@ export class PostsService {
 
     if (!author) {
       throw new NotFoundException(`User with ${authorId} not found`);
+    }
+    const courseParticipant = await this.courseParticipantRepository.findOne({
+      where: {
+        userId: authorId,
+      },
+    });
+
+    if (!courseParticipant) {
+      throw new NotFoundException(`User not exist in a course`);
+    }
+
+    if (courseParticipant.role !== CourseRole.OWNER) {
+      throw new ForbiddenException('Only owners can create posts');
     }
 
     const course = await this.courseRepository.findOne({
@@ -66,13 +88,46 @@ export class PostsService {
     return post;
   }
 
-  async update(id: string, updatePostInput: UpdatePostInput): Promise<Post> {
+  async update(
+    id: string,
+    updatePostInput: UpdatePostInput & { authorId: string },
+  ): Promise<Post> {
+    const { authorId, ...rest } = updatePostInput;
+
+    const courseParticipant = await this.courseParticipantRepository.findOne({
+      where: {
+        userId: authorId,
+      },
+    });
+
+    if (!courseParticipant) {
+      throw new NotFoundException(`User not exist in a course`);
+    }
+
+    if (courseParticipant.role !== CourseRole.OWNER) {
+      throw new ForbiddenException('Only owners can update posts');
+    }
+
     const post = await this.findOne(id);
-    Object.assign(post, updatePostInput);
+    Object.assign(post, rest);
     return this.postRepository.save(post);
   }
 
-  async remove(id: string): Promise<boolean> {
+  async remove(id: string, authorId: string): Promise<boolean> {
+    const courseParticipant = await this.courseParticipantRepository.findOne({
+      where: {
+        userId: authorId,
+      },
+    });
+
+    if (!courseParticipant) {
+      throw new NotFoundException(`User not exist in a course`);
+    }
+
+    if (courseParticipant.role !== CourseRole.OWNER) {
+      throw new ForbiddenException('Only owners can remove posts');
+    }
+
     const result = await this.postRepository.delete(id);
     return result.affected > 0;
   }
