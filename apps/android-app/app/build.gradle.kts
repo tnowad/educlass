@@ -4,6 +4,7 @@ plugins {
 
     id("kotlin-kapt")
     id("com.google.dagger.hilt.android")
+    id("com.apollographql.apollo3")
 }
 
 android {
@@ -51,6 +52,7 @@ dependencies {
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
 
+    implementation("com.apollographql.apollo3:apollo-runtime:3.8.5")
     implementation(libs.hilt.android)
     kapt(libs.hilt.android.compiler)
     testImplementation(libs.junit)
@@ -60,4 +62,15 @@ dependencies {
 
 kapt {
     correctErrorTypes = true
+}
+
+apollo {
+    service("service") {
+        packageName.set("com.edusuite.educlass")
+
+        introspection {
+            endpointUrl.set("https://localhost:3000/graphql")
+            schemaFile.set(file("src/main/graphql/schema.graphqls"))
+        }
+    }
 }
