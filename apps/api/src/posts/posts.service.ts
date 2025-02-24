@@ -1,17 +1,12 @@
-import {
-  ForbiddenException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Post } from 'src/posts/entities/post.entity';
 import { CreatePostInput } from './dto/create-post.input';
 import { UpdatePostInput } from './dto/update-post.input';
-import { CourseRole } from 'src/course-participants/dto/role.enum';
 import { CourseParticipantsService } from 'src/course-participants/course-participants.service';
-import { UsersService } from 'src/users/users.service';
 import { CoursesService } from 'src/courses/courses.service';
+import { User } from 'src/users/entities/user.entity';
 
 @Injectable()
 export class PostsService {
@@ -19,35 +14,27 @@ export class PostsService {
     @InjectRepository(Post)
     private readonly postRepository: Repository<Post>,
 
-    private readonly usersService: UsersService,
-
     private readonly coursesService: CoursesService,
 
-    private readonly courseParticipantService: CourseParticipantsService,
+    private readonly courseParticipantsService: CourseParticipantsService,
   ) {}
 
   async create(
-    createPostInput: CreatePostInput & { authorId: string },
+    createPostInput: CreatePostInput & { user: User },
   ): Promise<Post> {
-    const { authorId, courseId, ...rest } = createPostInput;
+    const { user, courseId, ...rest } = createPostInput;
 
-    const author = await this.usersService.findOne(authorId);
-
-    if (!author) {
-      throw new NotFoundException(`User with ${authorId} not found`);
+    if (!user) {
+      throw new NotFoundException(`User with ${user.id} not found`);
     }
-    const courseParticipant =
-      await this.courseParticipantService.findOwnerByCourseIdAndUserId(
+    const owner =
+      await this.courseParticipantsService.findOwnerByCourseIdAndUserId(
         courseId,
-        authorId,
+        user.id,
       );
 
-    if (!courseParticipant) {
-      throw new NotFoundException(`User not exist in a course`);
-    }
-
-    if (courseParticipant.role !== CourseRole.OWNER) {
-      throw new ForbiddenException('Only owners can create posts');
+    if (!owner) {
+      throw new NotFoundException(`User not owner the course`);
     }
 
     const course = await this.coursesService.findOne(courseId);
@@ -55,7 +42,7 @@ export class PostsService {
       throw new NotFoundException(`Course with ${courseId} not found`);
     }
 
-    const post = this.postRepository.create({ ...rest, author, course });
+    const post = this.postRepository.create({ ...rest, author: user, course });
     return this.postRepository.save(post);
   }
 
@@ -78,22 +65,18 @@ export class PostsService {
 
   async update(
     id: string,
-    updatePostInput: UpdatePostInput & { authorId: string },
+    updatePostInput: UpdatePostInput & { user: User },
   ): Promise<Post> {
-    const { authorId, courseId, ...rest } = updatePostInput;
+    const { user, courseId, ...rest } = updatePostInput;
 
-    const courseParticipant =
-      await this.courseParticipantService.findOwnerByCourseIdAndUserId(
+    const owner =
+      await this.courseParticipantsService.findOwnerByCourseIdAndUserId(
         courseId,
-        authorId,
+        user.id,
       );
 
-    if (!courseParticipant) {
+    if (!owner) {
       throw new NotFoundException(`User not exist in a course`);
-    }
-
-    if (courseParticipant.role !== CourseRole.OWNER) {
-      throw new ForbiddenException('Only owners can update posts');
     }
 
     const post = await this.findOne(id);
@@ -101,7 +84,7 @@ export class PostsService {
     return this.postRepository.save(post);
   }
 
-  async remove(id: string, authorId: string): Promise<boolean> {
+  async remove(id: string, user: User): Promise<boolean> {
     const post = await this.postRepository.findOne({
       where: {
         id,
@@ -110,18 +93,14 @@ export class PostsService {
     if (!post) {
       throw new NotFoundException('Post not found');
     }
-    const courseParticipant =
-      await this.courseParticipantService.findOwnerByCourseIdAndUserId(
+    const isOwner =
+      await this.courseParticipantsService.findOwnerByCourseIdAndUserId(
         post.course.id,
-        authorId,
+        user.id,
       );
 
-    if (!courseParticipant) {
+    if (!isOwner) {
       throw new NotFoundException(`User not exist in a course`);
-    }
-
-    if (courseParticipant.role !== CourseRole.OWNER) {
-      throw new ForbiddenException('Only owners can remove posts');
     }
 
     const result = await this.postRepository.delete(id);

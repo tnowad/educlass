@@ -18,7 +18,7 @@ export class PostsResolver {
     @Args('createPostInput') createPostInput: CreatePostInput,
     @CurrentUser() user: User,
   ): Promise<Post> {
-    return this.postService.create({ ...createPostInput, authorId: user.id });
+    return this.postService.create({ ...createPostInput, user });
   }
 
   @Query(() => [Post])
@@ -40,7 +40,7 @@ export class PostsResolver {
   ): Promise<Post> {
     return this.postService.update(id, {
       ...updatePostInput,
-      authorId: user.id,
+      user: user,
     });
   }
 
@@ -50,6 +50,6 @@ export class PostsResolver {
     @Args('id') id: string,
     @CurrentUser() user: User,
   ): Promise<boolean> {
-    return this.postService.remove(id, user.id);
+    return this.postService.remove(id, user);
   }
 }

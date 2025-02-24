@@ -69,6 +69,10 @@ export class CourseParticipantsService {
       },
     });
 
+    if (!owner) {
+      return null;
+    }
+
     return owner;
   }
 
