@@ -106,6 +106,9 @@ export class PostsService {
     }
 
     const post = await this.findOne(id);
+    if (!post) {
+      throw new NotFoundException('Post not found');
+    }
     Object.assign(post, rest);
     return this.postRepository.save(post);
   }
