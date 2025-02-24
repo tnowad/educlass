@@ -69,6 +69,7 @@ input CreateLocalProviderInput {
 
 input CreatePostInput {
   audience: audience_enum
+  authorId: String!
   content: String!
   courseId: String!
   status: post_status_enum
@@ -133,6 +134,11 @@ type Mutation {
   uploadFile(uploadFileInput: UploadFileInput!): File!
 }
 
+type PageInfo {
+  endCursor: String
+  hasNextPage: Boolean!
+}
+
 type Post {
   audience: audience_enum!
   author: User!
@@ -144,6 +150,16 @@ type Post {
   updatedAt: DateTime!
 }
 
+type PostConnection {
+  edges: [PostEdge!]!
+  pageInfo: PageInfo!
+}
+
+type PostEdge {
+  cursor: String!
+  node: Post!
+}
+
 type Query {
   Course(id: String!): Course!
   Courses: [Course!]!
@@ -151,7 +167,7 @@ type Query {
   assignments: [Assignment!]!
   courseParticipant(id: String!): CourseParticipant
   courseParticipants: [CourseParticipant!]!
-  findAllPosts: [Post!]!
+  findAllPosts(after: String, first: Float): PostConnection!
   findPostById(id: String!): Post!
   localProvider(id: String!): LocalProvider!
   localProviders: [LocalProvider!]!
@@ -229,6 +245,7 @@ input UpdateLocalProviderInput {
 
 input UpdatePostInput {
   audience: audience_enum
+  authorId: String
   content: String
   courseId: String
   status: post_status_enum

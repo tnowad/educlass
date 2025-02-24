@@ -7,6 +7,7 @@ import { UpdatePostInput } from './dto/update-post.input';
 import { CourseParticipantsService } from 'src/course-participants/course-participants.service';
 import { CoursesService } from 'src/courses/courses.service';
 import { User } from 'src/users/entities/user.entity';
+import { PostConnection } from './dto/post-conection';
 
 @Injectable()
 export class PostsService {
@@ -46,8 +47,33 @@ export class PostsService {
     return this.postRepository.save(post);
   }
 
-  async findAll(): Promise<Post[]> {
-    return this.postRepository.find({ relations: ['author', 'course'] });
+  async findAll(first = 10, after?: string): Promise<PostConnection> {
+    const query = this.postRepository
+      .createQueryBuilder('post')
+      .leftJoinAndSelect('post.author', 'author')
+      .leftJoinAndSelect('post.course', 'course')
+      .orderBy('post.createdAt', 'DESC')
+      .take(first + 1);
+
+    if (after) {
+      query.where('post.createdAt < :after', { after });
+    }
+
+    const posts = await query.getMany();
+    const hasNextPage = posts.length > first;
+
+    const edges = posts.slice(0, first).map((post) => ({
+      cursor: post.createdAt.toISOString(),
+      node: post,
+    }));
+
+    return {
+      edges,
+      pageInfo: {
+        hasNextPage,
+        endCursor: hasNextPage ? edges[edges.length - 1].cursor : null,
+      },
+    };
   }
 
   async findOne(id: string): Promise<Post> {
