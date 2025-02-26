@@ -1,8 +1,7 @@
-package com.edusuite.educlass.ui.main;
+package com.edusuite.educlass.ui.home;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
-
 
 import com.edusuite.educlass.model.Course;
 import com.edusuite.educlass.repository.CourseRepository;
