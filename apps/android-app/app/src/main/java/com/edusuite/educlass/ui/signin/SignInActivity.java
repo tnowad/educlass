@@ -1,10 +1,15 @@
 package com.edusuite.educlass.ui.signin;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
+
 import com.edusuite.educlass.databinding.ActivitySignInBinding;
+import com.edusuite.educlass.ui.home.HomeActivity;
+
 import dagger.hilt.android.AndroidEntryPoint;
 
 @AndroidEntryPoint
@@ -23,7 +28,8 @@ public class SignInActivity extends AppCompatActivity {
 
         viewModel.signInData.observe(this, data -> {
             Toast.makeText(this, "Login Successful", Toast.LENGTH_SHORT).show();
-            // Navigate to next screen
+            startActivity(new Intent(this, HomeActivity.class));
+            finish();
         });
         viewModel.errorMessage.observe(this, message -> {
             if (message != null && !message.isEmpty()) {
