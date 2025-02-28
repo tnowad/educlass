@@ -12,6 +12,7 @@ import { GqlAuthGuard } from './graphql-auth.guard';
 import { User } from 'src/users/entities/user.entity';
 import { CurrentUser } from './decorators/user.decorator';
 import { UsersService } from 'src/users/users.service';
+import { ActionResult } from 'src/common/dtos/action.result';
 
 @Resolver()
 export class AuthResolver {
@@ -25,10 +26,10 @@ export class AuthResolver {
     return this.authService.signIn(signInInput);
   }
 
-  @Mutation(() => TokensResult)
+  @Mutation(() => ActionResult)
   async signUp(
     @Args('signUpInput') signUpInput: SignUpInput,
-  ): Promise<TokensResult> {
+  ): Promise<ActionResult> {
     return await this.authService.signUp(signUpInput);
   }
 

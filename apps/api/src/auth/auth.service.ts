@@ -21,6 +21,7 @@ import { Cache, CACHE_MANAGER } from '@nestjs/cache-manager';
 import { ResetPasswordInput } from './dtos/reset-password.input';
 import { ResetPasswordResult } from './dtos/reset-password.result';
 import { RequestResetPasswordInput } from './dtos/request-reset-password.input';
+import { ActionResult } from 'src/common/dtos/action.result';
 
 @Injectable()
 export class AuthService {
@@ -56,7 +57,7 @@ export class AuthService {
     };
   }
 
-  async signUp(signUpInput: SignUpInput): Promise<TokensResult> {
+  async signUp(signUpInput: SignUpInput): Promise<ActionResult> {
     if (await this.userService.findOneByEmail(signUpInput.email)) {
       throw new ForbiddenException('Email already exists');
     }
@@ -82,12 +83,9 @@ export class AuthService {
       },
     });
 
-    const payload = { email: user.email, sub: user.id };
     return {
-      accessToken: this.jwtService.sign(payload),
-      refreshToken: this.jwtService.sign(payload, {
-        expiresIn: '7d',
-      }),
+      success: true,
+      message: 'User created successfully, check your email to verify',
     };
   }
 
