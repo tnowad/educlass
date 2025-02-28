@@ -2,6 +2,7 @@ package com.edusuite.educlass.ui.signin;
 
 import android.util.Log;
 
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
@@ -26,6 +27,7 @@ public class SignInViewModel extends ViewModel {
     public final MutableLiveData<Boolean> loading = new MutableLiveData<>(false);
     public final MutableLiveData<SignInMutation.Data> signInData = new MutableLiveData<>();
     public final MutableLiveData<String> errorMessage = new MutableLiveData<>();
+    private final MutableLiveData<Boolean> navigateToSignUp = new MutableLiveData<>();
 
     private final AuthRepository authRepository;
     private final AuthStorage authStorage;
@@ -37,7 +39,7 @@ public class SignInViewModel extends ViewModel {
         this.authStorage = authStorage;
     }
 
-    public void doSignIn() {
+    public void signIn() {
         String emailValue = email.getValue();
         String passwordValue = password.getValue();
 
@@ -66,6 +68,14 @@ public class SignInViewModel extends ViewModel {
                     : "GraphQL error: " + throwable.getMessage(), throwable);
                 errorMessage.setValue(throwable.getMessage());
             }));
+    }
+
+    public void navigateToSignUp() {
+        navigateToSignUp.setValue(true);
+    }
+
+    public LiveData<Boolean> getNavigateToSignUp() {
+        return navigateToSignUp;
     }
 
     @Override

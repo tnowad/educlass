@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.edusuite.educlass.databinding.ActivitySignInBinding;
 import com.edusuite.educlass.ui.home.HomeActivity;
+import com.edusuite.educlass.ui.signup.SignUpActivity;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
@@ -30,6 +31,11 @@ public class SignInActivity extends AppCompatActivity {
             Toast.makeText(this, "Login Successful", Toast.LENGTH_SHORT).show();
             startActivity(new Intent(this, HomeActivity.class));
             finish();
+        });
+        viewModel.getNavigateToSignUp().observe(this, navigate -> {
+            if (navigate) {
+                startActivity(new Intent(this, SignUpActivity.class));
+            }
         });
         viewModel.errorMessage.observe(this, message -> {
             if (message != null && !message.isEmpty()) {
