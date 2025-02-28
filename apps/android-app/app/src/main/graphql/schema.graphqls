@@ -2,6 +2,11 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+type ActionResult {
+  message: String
+  success: Boolean!
+}
+
 type Assignment {
   attachements: [File!]!
   course: Course!
@@ -112,7 +117,7 @@ type Mutation {
   requestPasswordReset(requestResetPasswordInput: RequestResetPasswordInput!): RequestResetPasswordResult!
   resetPassword(resetPasswordInput: ResetPasswordInput!): ResetPasswordResult!
   signIn(signInInput: SignInInput!): TokensResult!
-  signUp(signUpInput: SignUpInput!): TokensResult!
+  signUp(signUpInput: SignUpInput!): ActionResult!
   updateAssignment(updateAssignmentInput: UpdateAssignmentInput!): Assignment!
   updateAvatar(updateAvatarInput: UpdateAvatarInput!): User!
   updateCourse(updateCourseInput: UpdateCourseInput!): Course!

@@ -3,8 +3,10 @@ package com.edusuite.educlass.repository;
 import com.apollographql.apollo3.ApolloClient;
 import com.apollographql.apollo3.rx3.Rx3Apollo;
 import com.edusuite.educlass.SignInMutation;
+import com.edusuite.educlass.SignUpMutation;
 import com.edusuite.educlass.storage.AuthStorage;
 import com.edusuite.educlass.type.SignInInput;
+import com.edusuite.educlass.type.SignUpInput;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -30,12 +32,20 @@ public class AuthRepository {
             .map(response -> {
                 if (response.data != null) {
                     authStorage.saveTokens(
-                            response.data.getSignIn().getAccessToken(),
-                            response.data.getSignIn().getRefreshToken()
+                        response.data.getSignIn().getAccessToken(),
+                        response.data.getSignIn().getRefreshToken()
                     );
                 }
                 return response.data;
             })
+            .onErrorResumeNext(Single::error);
+    }
+
+    public Single<SignUpMutation.Data> signUp(String email, String password, String name) {
+        SignUpInput signUpInput = new SignUpInput(email, name, password);
+
+        return Rx3Apollo.single(apolloClient.mutation(new SignUpMutation(signUpInput)))
+            .map(response -> response.data)
             .onErrorResumeNext(Single::error);
     }
 }

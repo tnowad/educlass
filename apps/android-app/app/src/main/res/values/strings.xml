@@ -2,6 +2,7 @@
     <string name="app_name">Edu Class</string>
     <string name="content_description_app_logo">App logo</string>
     <string name="hint_email_address">Email Address</string>
+    <string name="hint_name">Name</string>
     <string name="hint_password">Password</string>
     <string name="text_sign_in">Sign In</string>
     <string name="text_forgot_password_prompt">Forgotten password?</string>

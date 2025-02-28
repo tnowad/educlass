@@ -22,8 +22,8 @@ import io.reactivex.rxjava3.schedulers.Schedulers;
 public class SignInViewModel extends ViewModel {
     private static final String TAG = "SignInViewModel";
 
-    public final MutableLiveData<String> email = new MutableLiveData<>();
-    public final MutableLiveData<String> password = new MutableLiveData<>();
+    public final MutableLiveData<String> email = new MutableLiveData<>("user@educlass.com");
+    public final MutableLiveData<String> password = new MutableLiveData<>("Password@123");
     public final MutableLiveData<Boolean> loading = new MutableLiveData<>(false);
     public final MutableLiveData<SignInMutation.Data> signInData = new MutableLiveData<>();
     public final MutableLiveData<String> errorMessage = new MutableLiveData<>();
