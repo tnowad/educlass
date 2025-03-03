@@ -13,6 +13,7 @@ import { User } from 'src/users/entities/user.entity';
 import { CurrentUser } from './decorators/user.decorator';
 import { UsersService } from 'src/users/users.service';
 import { ActionResult } from 'src/common/dtos/action.result';
+import { ResendEmailVerificationInput } from './dtos/resend-email-verification.input';
 
 @Resolver()
 export class AuthResolver {
@@ -31,6 +32,16 @@ export class AuthResolver {
     @Args('signUpInput') signUpInput: SignUpInput,
   ): Promise<ActionResult> {
     return await this.authService.signUp(signUpInput);
+  }
+
+  @Mutation(() => ActionResult)
+  async resendEmailVerification(
+    @Args('resendEmailVerificationInput')
+    resendEmailVerificationInput: ResendEmailVerificationInput,
+  ): Promise<ActionResult> {
+    return await this.authService.resendEmailVerification(
+      resendEmailVerificationInput,
+    );
   }
 
   @Mutation(() => User)

@@ -22,10 +22,15 @@ import { ResetPasswordInput } from './dtos/reset-password.input';
 import { ResetPasswordResult } from './dtos/reset-password.result';
 import { RequestResetPasswordInput } from './dtos/request-reset-password.input';
 import { ActionResult } from 'src/common/dtos/action.result';
+import { ResendEmailVerificationInput } from './dtos/resend-email-verification.input';
+import { randomInt } from 'crypto';
+import { LocalProvider } from 'src/local-providers/entities/local-provider.entity';
+import { DataSource } from 'typeorm';
 
 @Injectable()
 export class AuthService {
   constructor(
+    private dataSource: DataSource,
     private userService: UsersService,
     private localProvidersService: LocalProvidersService,
     private jwtService: JwtService,
@@ -58,35 +63,33 @@ export class AuthService {
   }
 
   async signUp(signUpInput: SignUpInput): Promise<ActionResult> {
-    if (await this.userService.findOneByEmail(signUpInput.email)) {
-      throw new ForbiddenException('Email already exists');
-    }
+    return await this.dataSource.transaction(async (manager) => {
+      if (
+        await manager.findOne(User, { where: { email: signUpInput.email } })
+      ) {
+        throw new ForbiddenException('Email already exists');
+      }
 
-    const user = await this.userService.create({
-      name: signUpInput.name,
-      email: signUpInput.email,
-      emailVerified: false,
+      const user = manager.create(User, {
+        name: signUpInput.name,
+        email: signUpInput.email,
+        emailVerified: false,
+      });
+
+      await manager.save(user);
+
+      const localProvider = manager.create(LocalProvider, {
+        user,
+        password: hashSync(signUpInput.password, 10),
+      });
+
+      await manager.save(localProvider);
+
+      return {
+        success: true,
+        message: 'User created successfully, please verify your email',
+      };
     });
-
-    const localProvider = await this.localProvidersService.create({
-      password: hashSync(signUpInput.password),
-    });
-
-    user.localProvider = localProvider;
-
-    this.userService.save(user);
-
-    await this.mailService.userSignUp({
-      to: user.email,
-      data: {
-        hash: user.email,
-      },
-    });
-
-    return {
-      success: true,
-      message: 'User created successfully, check your email to verify',
-    };
   }
 
   async validateUser(token: string): Promise<User> {
@@ -159,6 +162,35 @@ export class AuthService {
     return {
       message: 'Password reset successfully',
       success: true,
+    };
+  }
+
+  async resendEmailVerification(
+    resendEmailVerificationInput: ResendEmailVerificationInput,
+  ): Promise<ActionResult> {
+    const { email } = resendEmailVerificationInput;
+    const key = `${email}::verify-email`;
+
+    const user = await this.userService.findOneByEmail(email);
+    if (!user) {
+      throw new BadRequestException('User not found');
+    }
+
+    if (user.emailVerified) {
+      throw new BadRequestException('Email already verified');
+    }
+
+    const code = randomInt(100000, 999999).toString();
+    await this.cacheManager.set(key, code, 5 * 60 * 1000);
+
+    await this.mailService.userSignUp({
+      to: user.email,
+      data: { hash: code },
+    });
+
+    return {
+      success: true,
+      message: 'Verification email sent',
     };
   }
 }
