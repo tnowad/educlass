@@ -138,6 +138,7 @@ type Query {
   courseParticipants: [CourseParticipant!]!
   localProvider(id: String!): LocalProvider!
   localProviders: [LocalProvider!]!
+  me: User!
   user(id: String!): User!
   users: [User!]!
 }

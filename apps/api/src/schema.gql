@@ -178,6 +178,7 @@ type Query {
   findPostById(id: String!): Post!
   localProvider(id: String!): LocalProvider!
   localProviders: [LocalProvider!]!
+  me: User!
   user(id: String!): User!
   users: [User!]!
 }
@@ -288,6 +289,10 @@ type User {
   updatedAt: DateTime!
 }
 
+input VerifyEmailInput {
+  code: String!
+  email: String!
+}
 
 """Audience visibility of a post"""
 enum audience_enum {
@@ -296,12 +301,9 @@ enum audience_enum {
   RESTRICTED
 }
 
+"""Status of a post"""
 enum post_status_enum {
   ARCHIVED
   DRAFT
   PUBLISHED
-}
-input VerifyEmailInput {
-  code: String!
-  email: String!
 }
