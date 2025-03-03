@@ -1,11 +1,14 @@
 package com.edusuite.educlass.ui.verification;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.edusuite.educlass.databinding.ActivityEmailVerificationBinding;
+import com.edusuite.educlass.ui.signin.SignInActivity;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
@@ -27,7 +30,25 @@ public class EmailVerificationActivity extends AppCompatActivity {
 
         String email = getIntent().getStringExtra("email");
         if (email != null) {
-            viewModel.email.setValue(email); // Set email in ViewModel
+            viewModel.email.setValue(email);
         }
+
+        viewModel.verificationSuccess.observe(this, success -> {
+            if (success) {
+                Toast.makeText(this, "Verify Successful", Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(this, SignInActivity.class));
+                finish();
+            }
+        });
+        viewModel.resendSuccess.observe(this, success -> {
+            if (success) {
+                Toast.makeText(this, "Verification email resent.", Toast.LENGTH_SHORT).show();
+            }
+        });
+        viewModel.errorMessage.observe(this, message -> {
+            if (message != null && !message.isEmpty()) {
+                Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }

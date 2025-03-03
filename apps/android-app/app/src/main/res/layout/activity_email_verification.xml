@@ -91,9 +91,9 @@
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="16dp"
             android:layout_marginBottom="16dp"
-            android:onClick="@{() -> viewModel.verifyEmail()}"
-
-            android:text="@string/text_resend_verification_code"
+            android:enabled="@{viewModel.countdownTimer == 0}"
+            android:onClick="@{() -> viewModel.resendEmailVerification()}"
+            android:text="@{viewModel.countdownTimer > 0 ? (`Resend in ` + viewModel.countdownTimer + `s`) : @string/text_resend_verification_code}"
             app:cornerRadius="8dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

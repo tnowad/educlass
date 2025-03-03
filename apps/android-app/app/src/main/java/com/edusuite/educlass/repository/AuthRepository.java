@@ -2,11 +2,15 @@ package com.edusuite.educlass.repository;
 
 import com.apollographql.apollo3.ApolloClient;
 import com.apollographql.apollo3.rx3.Rx3Apollo;
+import com.edusuite.educlass.ResendEmailVerificationMutation;
 import com.edusuite.educlass.SignInMutation;
 import com.edusuite.educlass.SignUpMutation;
+import com.edusuite.educlass.VerifyEmailMutation;
 import com.edusuite.educlass.storage.AuthStorage;
+import com.edusuite.educlass.type.ResendEmailVerificationInput;
 import com.edusuite.educlass.type.SignInInput;
 import com.edusuite.educlass.type.SignUpInput;
+import com.edusuite.educlass.type.VerifyEmailInput;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -45,6 +49,22 @@ public class AuthRepository {
         SignUpInput signUpInput = new SignUpInput(email, name, password);
 
         return Rx3Apollo.single(apolloClient.mutation(new SignUpMutation(signUpInput)))
+            .map(response -> response.data)
+            .onErrorResumeNext(Single::error);
+    }
+
+    public Single<VerifyEmailMutation.Data> verifyEmail(String email, String code) {
+        VerifyEmailInput verifyEmailInput = new VerifyEmailInput(code, email);
+
+        return Rx3Apollo.single(apolloClient.mutation(new VerifyEmailMutation(verifyEmailInput)))
+            .map(response -> response.data)
+            .onErrorResumeNext(Single::error);
+    }
+
+    public Single<ResendEmailVerificationMutation.Data> resendEmailVerification(String email) {
+        var input = new ResendEmailVerificationInput(email);
+
+        return Rx3Apollo.single(apolloClient.mutation(new ResendEmailVerificationMutation(input)))
             .map(response -> response.data)
             .onErrorResumeNext(Single::error);
     }
