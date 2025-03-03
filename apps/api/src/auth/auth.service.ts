@@ -22,6 +22,7 @@ import { ResetPasswordInput } from './dtos/reset-password.input';
 import { ResetPasswordResult } from './dtos/reset-password.result';
 import { RequestResetPasswordInput } from './dtos/request-reset-password.input';
 import { ActionResult } from 'src/common/dtos/action.result';
+import { VerifyEmailInput } from './dtos/verify-email.input';
 import { ResendEmailVerificationInput } from './dtos/resend-email-verification.input';
 import { randomInt } from 'crypto';
 import { LocalProvider } from 'src/local-providers/entities/local-provider.entity';
@@ -162,6 +163,37 @@ export class AuthService {
     return {
       message: 'Password reset successfully',
       success: true,
+    };
+  }
+
+  async verifyEmail(verifyEmailInput: VerifyEmailInput): Promise<ActionResult> {
+    const { email, code } = verifyEmailInput;
+    const key = `${email}::verify-email`;
+
+    const [user, storedCode] = await Promise.all([
+      this.userService.findOneByEmail(email),
+      this.cacheManager.get<string>(key),
+    ]);
+
+    if (!user) {
+      throw new BadRequestException('User not found');
+    }
+
+    if (user.emailVerified) {
+      throw new BadRequestException('Email already verified');
+    }
+
+    if (!storedCode || code !== storedCode) {
+      throw new BadRequestException('Invalid or expired code');
+    }
+
+    await this.userService.updateEmailVerified(user.id, true);
+
+    await this.cacheManager.del(key);
+
+    return {
+      success: true,
+      message: 'Email verified successfully',
     };
   }
 
