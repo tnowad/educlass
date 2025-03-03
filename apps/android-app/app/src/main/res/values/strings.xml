@@ -5,6 +5,7 @@
     <string name="hint_name">Name</string>
     <string name="hint_password">Password</string>
     <string name="text_sign_in">Sign In</string>
+    <string name="text_verify_email">Verify email</string>
     <string name="text_forgot_password_prompt">Forgotten password?</string>
     <string name="text_sign_up_prompt">Don\'t have an account? <u>Sign Up</u></string>
     <string name="text_sign_in_prompt">Already have an account? <u>Sign In</u></string>
@@ -27,4 +28,6 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="text_create_a_class">Tạo lớp học</string>
     <string name="text_join_class">Tham gia lớp học</string>
+    <string name="hint_verification_code">Verification Code</string>
+    <string name="text_resend_verification_code">Resend code</string>
 </resources>

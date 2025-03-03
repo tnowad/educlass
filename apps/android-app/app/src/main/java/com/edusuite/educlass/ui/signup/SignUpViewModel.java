@@ -24,7 +24,7 @@ public class SignUpViewModel extends ViewModel {
     public final MutableLiveData<String> confirmPassword = new MutableLiveData<>("Password@123");
     public final MutableLiveData<String> name = new MutableLiveData<>("John Doe");
     public final MutableLiveData<Boolean> loading = new MutableLiveData<>(false);
-    public final MutableLiveData<Boolean> signUpSuccess = new MutableLiveData<>(false);
+    public final MutableLiveData<String> signUpSuccess = new MutableLiveData<>();
     public final MutableLiveData<String> errorMessage = new MutableLiveData<>();
 
     private final AuthRepository authRepository;
@@ -64,7 +64,7 @@ public class SignUpViewModel extends ViewModel {
             .subscribe(response -> {
                 if (response.getSignUp().getSuccess()) {
                     Log.d(TAG, "Sign-up successful: " + response.getSignUp().getMessage());
-                    signUpSuccess.setValue(true);
+                    signUpSuccess.setValue(emailValue);
                 } else {
                     errorMessage.setValue(response.getSignUp().getMessage());
                 }
