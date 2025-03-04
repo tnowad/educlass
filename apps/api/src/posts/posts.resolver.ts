@@ -7,7 +7,7 @@ import { UseGuards } from '@nestjs/common';
 import { GqlAuthGuard } from 'src/auth/graphql-auth.guard';
 import { CurrentUser } from 'src/auth/decorators/user.decorator';
 import { User } from 'src/users/entities/user.entity';
-import { PostConnection } from './dto/post-conection';
+import { PostsConnection } from './dto/post.input';
 
 @Resolver(() => Post)
 export class PostsResolver {
@@ -22,11 +22,11 @@ export class PostsResolver {
     return this.postService.create({ ...createPostInput, user });
   }
 
-  @Query(() => PostConnection)
+  @Query(() => PostsConnection)
   async findAllPosts(
     @Args('first', { type: () => Number, nullable: true }) first?: number,
     @Args('after', { type: () => String, nullable: true }) after?: string,
-  ): Promise<PostConnection> {
+  ): Promise<PostsConnection> {
     return this.postService.findAll(first, after);
   }
 
