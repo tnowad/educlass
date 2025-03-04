@@ -1,47 +1,58 @@
 package com.edusuite.educlass.model;
 
-import androidx.annotation.Nullable;
+import java.util.Objects;
 
 public class Course {
-    private String id;
-    private String name;
-    private String subtitle;
+    private final String id;
+    private final String name;
+    private final String section;
+    private final String room;
+    private final String subject;
+    private final String code;
 
-    public Course(String id, String name, String subtitle) {
+    public Course(String id, String name, String section, String room, String subject, String code) {
         this.id = id;
         this.name = name;
-        this.subtitle = subtitle;
+        this.section = section;
+        this.room = room;
+        this.subject = subject;
+        this.code = code;
     }
 
     public String getId() {
         return id;
     }
 
-    public void setId(String id) {
-        this.id = id;
-    }
-
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public String getSection() {
+        return section;
     }
 
-    public String getSubtitle() {
-        return subtitle;
+    public String getRoom() {
+        return room;
     }
 
-    public void setSubtitle(String subtitle) {
-        this.subtitle = subtitle;
+    public String getSubject() {
+        return subject;
+    }
+
+    public String getCode() {
+        return code;
     }
 
     @Override
-    public boolean equals(@Nullable Object course) {
-        if (course instanceof Course) {
-            return this.equals(((Course) course).getId());
-        }
-        return false;
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        Course course = (Course) obj;
+        return id.equals(course.id) && name.equals(course.name) && room.equals(course.room);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, room);
     }
 }

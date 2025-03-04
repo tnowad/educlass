@@ -7,6 +7,7 @@ import com.apollographql.apollo3.api.Optional;
 import com.apollographql.apollo3.rx3.Rx3Apollo;
 import com.edusuite.educlass.MyCoursesQuery;
 import com.edusuite.educlass.model.Course;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,7 +51,7 @@ public class CourseRepository {
                 List<Course> courses = new ArrayList<>();
                 for (MyCoursesQuery.Edge edge : response.data.getCourses().getEdges()) {
                     MyCoursesQuery.Node node = edge.getNode();
-                    courses.add(new Course(node.getId(), node.getName(), node.getCode()));
+                    courses.add(new Course(node.getId(), node.getName(), node.getCode(), node.getSection(), node.getRoom(), node.getSubject()));
                 }
                 return courses;
             });

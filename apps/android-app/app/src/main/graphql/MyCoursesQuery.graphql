@@ -5,6 +5,10 @@ query MyCoursesQuery($first: Int, $after: String) {
         id
         name
         code
+        section
+        room
+        subject
+        code
       }
     }
     pageInfo {

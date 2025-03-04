@@ -57,9 +57,13 @@ public class CourseAdapter extends ListAdapter<Course, CourseAdapter.CourseViewH
         }
 
         void bind(Course course) {
-            binding.courseTitle.setText(course.getName());
-            binding.courseCode.setText(course.getName());
-            binding.courseCard.setOnClickListener(v -> onCourseClickListener.onCourseClick(course));
+            binding.setCourse(course);
+            binding.executePendingBindings();
+            binding.courseCard.setOnClickListener(v -> {
+                if (onCourseClickListener != null) {
+                    onCourseClickListener.onCourseClick(course);
+                }
+            });
         }
     }
 }
