@@ -1,5 +1,7 @@
 package com.edusuite.educlass.model;
 
+import androidx.annotation.Nullable;
+
 public class Course {
     private String id;
     private String name;
@@ -33,5 +35,13 @@ public class Course {
 
     public void setSubtitle(String subtitle) {
         this.subtitle = subtitle;
+    }
+
+    @Override
+    public boolean equals(@Nullable Object course) {
+        if (course instanceof Course) {
+            return this.equals(((Course) course).getId());
+        }
+        return false;
     }
 }

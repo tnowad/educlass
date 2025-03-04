@@ -1,56 +1,65 @@
 package com.edusuite.educlass.ui.home;
 
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.DiffUtil;
+import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.edusuite.educlass.R;
+import com.edusuite.educlass.databinding.ItemCourseBinding;
 import com.edusuite.educlass.model.Course;
 
-import java.util.ArrayList;
-import java.util.List;
+public class CourseAdapter extends ListAdapter<Course, CourseAdapter.CourseViewHolder> {
 
-public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseViewHolder> {
+    private static final DiffUtil.ItemCallback<Course> DIFF_CALLBACK = new DiffUtil.ItemCallback<>() {
+        @Override
+        public boolean areItemsTheSame(@NonNull Course oldItem, @NonNull Course newItem) {
+            return oldItem.getId().equals(newItem.getId());
+        }
 
-    private List<Course> courses = new ArrayList<>();
+        @Override
+        public boolean areContentsTheSame(@NonNull Course oldItem, @NonNull Course newItem) {
+            return oldItem.equals(newItem);
+        }
+    };
+    private final OnCourseClickListener onCourseClickListener;
 
-    public void setCourses(List<Course> courses) {
-        this.courses = courses;
+    public CourseAdapter(OnCourseClickListener listener) {
+        super(DIFF_CALLBACK);
+        this.onCourseClickListener = listener;
     }
 
     @NonNull
     @Override
     public CourseViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_course, parent, false);
-        return new CourseViewHolder(view);
+        ItemCourseBinding binding = ItemCourseBinding.inflate(
+            LayoutInflater.from(parent.getContext()), parent, false);
+        return new CourseViewHolder(binding);
     }
 
     @Override
     public void onBindViewHolder(@NonNull CourseViewHolder holder, int position) {
-        Course course = courses.get(position);
-        holder.courseName.setText(course.getName());
-        holder.courseTitle.setText(course.getSubtitle());
+        holder.bind(getItem(position));
     }
 
-    @Override
-    public int getItemCount() {
-        return courses.size();
+    public interface OnCourseClickListener {
+        void onCourseClick(Course course);
     }
 
+    class CourseViewHolder extends RecyclerView.ViewHolder {
+        private final ItemCourseBinding binding;
 
-    static class CourseViewHolder extends RecyclerView.ViewHolder {
-        TextView courseName;
-        TextView courseTitle;
+        CourseViewHolder(ItemCourseBinding binding) {
+            super(binding.getRoot());
+            this.binding = binding;
+        }
 
-        public CourseViewHolder(@NonNull View itemView) {
-            super(itemView);
-            courseName = itemView.findViewById(R.id.courseName);
-            courseTitle = itemView.findViewById(R.id.courseTitle);
+        void bind(Course course) {
+            binding.courseTitle.setText(course.getName());
+            binding.courseCode.setText(course.getName());
+            binding.courseCard.setOnClickListener(v -> onCourseClickListener.onCourseClick(course));
         }
     }
-
 }

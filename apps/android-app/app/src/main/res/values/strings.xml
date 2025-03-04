@@ -30,4 +30,6 @@
     <string name="text_join_class">Tham gia lớp học</string>
     <string name="hint_verification_code">Verification Code</string>
     <string name="text_resend_verification_code">Resend code</string>
+    <string name="navigation_drawer_open">Open navigation</string>
+    <string name="navigation_drawer_close">Close navigation</string>
 </resources>

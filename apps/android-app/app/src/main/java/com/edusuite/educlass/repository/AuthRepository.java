@@ -4,11 +4,13 @@ import android.util.Log;
 
 import com.apollographql.apollo3.ApolloClient;
 import com.apollographql.apollo3.rx3.Rx3Apollo;
+import com.edusuite.educlass.RefreshTokenMutation;
 import com.edusuite.educlass.ResendEmailVerificationMutation;
 import com.edusuite.educlass.SignInMutation;
 import com.edusuite.educlass.SignUpMutation;
 import com.edusuite.educlass.VerifyEmailMutation;
 import com.edusuite.educlass.storage.AuthStorage;
+import com.edusuite.educlass.type.RefreshTokenInput;
 import com.edusuite.educlass.type.ResendEmailVerificationInput;
 import com.edusuite.educlass.type.SignInInput;
 import com.edusuite.educlass.type.SignUpInput;
@@ -79,6 +81,26 @@ public class AuthRepository {
         return Rx3Apollo.single(apolloClient.mutation(new ResendEmailVerificationMutation(input)))
             .doOnSuccess(response -> Log.d(TAG, "Resend email verification successful for email: " + email))
             .doOnError(error -> Log.e(TAG, "Resend email verification failed for email: " + email, error))
+            .map(response -> response.data);
+    }
+
+    public Single<RefreshTokenMutation.Data> refreshToken(String refreshToken) {
+        Log.d(TAG, "Refreshing token");
+        RefreshTokenInput input = new RefreshTokenInput(refreshToken);
+
+        return Rx3Apollo.single(apolloClient.mutation(new RefreshTokenMutation(input)))
+            .doOnSuccess(response -> {
+                if (response.data != null) {
+                    Log.d(TAG, "Token refresh successful");
+                    authStorage.saveTokens(
+                        response.data.getRefreshToken().getAccessToken(),
+                        response.data.getRefreshToken().getRefreshToken()
+                    );
+                } else {
+                    Log.w(TAG, "Token refresh response data is null");
+                }
+            })
+            .doOnError(error -> Log.e(TAG, "Token refresh failed", error))
             .map(response -> response.data);
     }
 }
