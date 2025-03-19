@@ -1,0 +1,6 @@
+mutation SignInMutation($signInInput: SignInInput!) {
+  signIn(signInInput: $signInInput) {
+    accessToken
+    refreshToken
+  }
+}

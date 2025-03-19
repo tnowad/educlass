@@ -1,0 +1,229 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type Assignment {
+  attachements: [File!]!
+  course: Course!
+  createdAt: DateTime!
+  description: String!
+  dueDate: DateTime
+  id: String!
+  startDate: DateTime
+  title: String!
+  updatedAt: DateTime!
+}
+
+type Course {
+  assignments: [Assignment!]
+  code: String!
+  createdAt: DateTime!
+  id: String!
+  inviteLink: String!
+  name: String!
+  room: String
+  section: String
+  subject: String
+  updatedAt: DateTime!
+}
+
+type CourseParticipant {
+  courseId: String!
+  id: String!
+  joinedAt: DateTime!
+  role: CourseRole!
+  userId: String!
+}
+
+enum CourseRole {
+  CO_OWNER
+  OWNER
+  PARTICIPANT
+}
+
+input CreateAssignmentInput {
+  attachements: [Upload!]
+  courseId: String!
+  description: String!
+  dueDate: DateTime!
+  startDate: DateTime!
+  title: String!
+}
+
+input CreateCourseInput {
+  name: String!
+  room: String
+  section: String
+  subject: String
+}
+
+input CreateCourseParticipantInput {
+  courseId: String!
+  role: CourseRole! = PARTICIPANT
+}
+
+input CreateLocalProviderInput {
+  password: String!
+}
+
+input CreateUserInput {
+  email: String!
+  emailVerified: Boolean
+  name: String!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type File {
+  assignment: Assignment
+  createdAt: DateTime!
+  filename: String!
+  id: String!
+  mimetype: String
+  objectName: String!
+  updatedAt: DateTime!
+  url: String
+  user: User
+}
+
+type LocalProvider {
+  createdAt: DateTime!
+  id: String!
+  password: String!
+  updatedAt: DateTime!
+  user: User!
+}
+
+type Mutation {
+  createAssignment(createAssignmentInput: CreateAssignmentInput!): Assignment!
+  createCourse(createCourseInput: CreateCourseInput!): Course!
+  createCourseParticipant(createCourseParticipantInput: CreateCourseParticipantInput!): CourseParticipant!
+  createLocalProvider(createLocalProviderInput: CreateLocalProviderInput!): LocalProvider!
+  createUser(createUserInput: CreateUserInput!): User!
+  getCurrentUser: User!
+  removeAssignment(id: String!): Assignment!
+  removeCourse(id: String!): Course!
+  removeCourseParticipant(id: String!): Boolean!
+  removeLocalProvider(id: String!): LocalProvider!
+  removeUser(id: String!): User!
+  requestPasswordReset(requestResetPasswordInput: RequestResetPasswordInput!): RequestResetPasswordResult!
+  resetPassword(resetPasswordInput: ResetPasswordInput!): ResetPasswordResult!
+  signIn(signInInput: SignInInput!): TokensResult!
+  signUp(signUpInput: SignUpInput!): TokensResult!
+  updateAssignment(updateAssignmentInput: UpdateAssignmentInput!): Assignment!
+  updateAvatar(updateAvatarInput: UpdateAvatarInput!): User!
+  updateCourse(updateCourseInput: UpdateCourseInput!): Course!
+  updateCourseParticipant(updateCourseParticipantInput: UpdateCourseParticipantInput!): CourseParticipant!
+  updateLocalProvider(updateLocalProviderInput: UpdateLocalProviderInput!): LocalProvider!
+  updateUser(updateUserInput: UpdateUserInput!): User!
+  uploadFile(uploadFileInput: UploadFileInput!): File!
+}
+
+type Query {
+  Course(id: String!): Course!
+  Courses: [Course!]!
+  assignment(id: String!): Assignment!
+  assignments: [Assignment!]!
+  courseParticipant(id: String!): CourseParticipant
+  courseParticipants: [CourseParticipant!]!
+  localProvider(id: String!): LocalProvider!
+  localProviders: [LocalProvider!]!
+  user(id: String!): User!
+  users: [User!]!
+}
+
+input RequestResetPasswordInput {
+  email: String!
+}
+
+type RequestResetPasswordResult {
+  message: String
+  success: Boolean!
+}
+
+input ResetPasswordInput {
+  password: String!
+  token: String!
+}
+
+type ResetPasswordResult {
+  message: String
+  success: Boolean!
+}
+
+input SignInInput {
+  email: String!
+  password: String!
+}
+
+input SignUpInput {
+  email: String!
+  name: String!
+  password: String!
+}
+
+type TokensResult {
+  accessToken: String!
+  refreshToken: String!
+}
+
+input UpdateAssignmentInput {
+  attachements: [Upload!]
+  courseId: String
+  description: String
+  dueDate: DateTime
+  id: String!
+  removeAttachements: [String!]
+  startDate: DateTime
+  title: String
+}
+
+input UpdateAvatarInput {
+  avatar: Upload
+}
+
+input UpdateCourseInput {
+  id: String!
+  name: String
+  room: String
+  section: String
+  subject: String
+}
+
+input UpdateCourseParticipantInput {
+  id: String!
+  role: CourseRole = PARTICIPANT
+}
+
+input UpdateLocalProviderInput {
+  id: String!
+  password: String
+}
+
+input UpdateUserInput {
+  email: String
+  emailVerified: Boolean
+  id: String!
+  name: String
+}
+
+"""The `Upload` scalar type represents a file upload."""
+scalar Upload
+
+input UploadFileInput {
+  file: Upload
+}
+
+type User {
+  avatar: File
+  createdAt: DateTime!
+  email: String!
+  emailVerified: Boolean!
+  id: String!
+  localProvider: LocalProvider
+  name: String!
+  updatedAt: DateTime!
+}

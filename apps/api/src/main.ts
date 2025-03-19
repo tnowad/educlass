@@ -4,6 +4,7 @@ import { ValidationPipe } from '@nestjs/common';
 import { graphqlUploadExpress } from 'graphql-upload-ts';
 import { AllConfigType } from './config/app.type';
 import { ConfigService } from '@nestjs/config';
+import { LoggingInterceptor } from './logging/logging.interceptor';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -16,6 +17,7 @@ async function bootstrap() {
     }),
   );
   app.use(graphqlUploadExpress({ maxFileSize: 10000000, maxFiles: 10 }));
+  app.useGlobalInterceptors(new LoggingInterceptor());
   await app.listen(configService.get('app').port);
 }
 bootstrap();
