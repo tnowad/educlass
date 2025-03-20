@@ -1,4 +1,4 @@
-package com.edusuite.educlass.ui.main;
+package com.edusuite.educlass.ui.home;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,6 +17,7 @@ import java.util.List;
 public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseViewHolder> {
 
     private List<Course> courses = new ArrayList<>();
+
     public void setCourses(List<Course> courses) {
         this.courses = courses;
     }
@@ -34,16 +35,17 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseView
         holder.courseName.setText(course.getName());
         holder.courseTitle.setText(course.getSubtitle());
     }
+
     @Override
     public int getItemCount() {
         return courses.size();
     }
 
 
-
-    static class CourseViewHolder extends RecyclerView.ViewHolder{
+    static class CourseViewHolder extends RecyclerView.ViewHolder {
         TextView courseName;
         TextView courseTitle;
+
         public CourseViewHolder(@NonNull View itemView) {
             super(itemView);
             courseName = itemView.findViewById(R.id.courseName);

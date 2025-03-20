@@ -58,6 +58,7 @@ dependencies {
     implementation("io.reactivex.rxjava3:rxandroid:3.0.2")
     implementation(libs.hilt.android)
     implementation(libs.com.google.dagger.hilt.android.gradle.plugin)
+    implementation(libs.androidx.security.crypto)
     kapt(libs.hilt.android.compiler)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

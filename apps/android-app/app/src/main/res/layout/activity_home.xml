@@ -4,7 +4,7 @@
     android:id="@+id/drawerLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.main.MainActivity">
+    tools:context=".ui.home.HomeActivity">
 
     <com.google.android.material.navigation.NavigationView
         android:id="@+id/navigationView"
@@ -22,17 +22,17 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
             android:background="@android:color/transparent"
             android:elevation="4dp"
-            android:layout_marginTop="16dp"
             android:paddingStart="16dp"
             android:paddingEnd="16dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
                 android:gravity="center_vertical"
+                android:orientation="horizontal"
                 android:weightSum="1">
 
 
@@ -41,23 +41,23 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:ellipsize="end"
+                    android:gravity="center"
+                    android:maxLines="1"
                     android:text="@string/app_name"
                     android:textColor="@android:color/black"
                     android:textSize="20sp"
-                    android:textStyle="bold"
-                    android:ellipsize="end"
-                    android:gravity="center"
-                    android:maxLines="1" />
+                    android:textStyle="bold" />
 
 
                 <ImageView
                     android:id="@+id/userImage"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
-                    android:src="@drawable/user_image"
-                    android:contentDescription="User Image"
+                    android:layout_gravity="center_vertical"
                     android:layout_marginRight="16dp"
-                    android:layout_gravity="center_vertical" />
+                    android:contentDescription="User Image"
+                    android:src="@drawable/user_image" />
             </LinearLayout>
 
         </androidx.appcompat.widget.Toolbar>
@@ -67,20 +67,19 @@
             android:id="@+id/recyclerViewMain"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:padding="8dp"
-            android:layout_marginTop="?attr/actionBarSize" />
-
+            android:layout_marginTop="?attr/actionBarSize"
+            android:padding="8dp" />
 
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/addCourseButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_add"
-            android:background="@drawable/bg_button"
-            app:backgroundTint="@color/light_purple"
             android:layout_gravity="end|bottom"
             android:layout_margin="16dp"
+            android:background="@drawable/bg_button"
+            android:src="@drawable/ic_add"
+            app:backgroundTint="@color/light_purple"
             app:tint="@android:color/white" />
 
 
