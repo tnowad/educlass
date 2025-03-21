@@ -3,16 +3,16 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.main.CourseOptionsBottomSheet">
+    tools:context=".ui.home.CourseOptionsBottomSheet">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="16dp"
-        android:background="@color/gray"
         android:layout_gravity="start"
-        >
+        android:background="@color/gray"
+        android:orientation="vertical"
+        android:padding="16dp">
+
         <Button
             android:id="@+id/btnJoinCourse"
             android:layout_width="match_parent"
@@ -20,17 +20,16 @@
             android:background="@android:color/transparent"
             android:text="@string/text_join_class"
             android:textColor="@color/white"
-            android:textStyle="bold"
-            />
+            android:textStyle="bold" />
 
         <Button
             android:id="@+id/btnCreateCourse"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@android:color/transparent"
-            android:textStyle="bold"
+            android:text="@string/text_create_a_class"
             android:textColor="@color/white"
-            android:text="@string/text_create_a_class" />
+            android:textStyle="bold" />
 
     </LinearLayout>
 

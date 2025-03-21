@@ -4,6 +4,7 @@ plugins {
 
     id("kotlin-kapt")
     id("com.google.dagger.hilt.android")
+    id("com.apollographql.apollo3")
 }
 
 android {
@@ -30,11 +31,11 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     kotlinOptions {
-        jvmTarget = "11"
+        jvmTarget = "17"
     }
 
     buildFeatures {
@@ -51,7 +52,13 @@ dependencies {
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
 
+    implementation("com.apollographql.apollo3:apollo-runtime:3.8.5")
+    implementation("com.apollographql.apollo3:apollo-rx3-support:3.8.5")
+    implementation("io.reactivex.rxjava3:rxjava:3.1.10")
+    implementation("io.reactivex.rxjava3:rxandroid:3.0.2")
     implementation(libs.hilt.android)
+    implementation(libs.com.google.dagger.hilt.android.gradle.plugin)
+    implementation(libs.androidx.security.crypto)
     kapt(libs.hilt.android.compiler)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
@@ -60,4 +67,15 @@ dependencies {
 
 kapt {
     correctErrorTypes = true
+}
+
+apollo {
+    service("service") {
+        packageName.set("com.edusuite.educlass")
+
+        introspection {
+            endpointUrl.set("https://127.0.0.1:3000/graphql")
+            schemaFile.set(file("src/main/graphql/schema.graphqls"))
+        }
+    }
 }

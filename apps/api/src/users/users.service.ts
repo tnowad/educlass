@@ -1,9 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateUserInput } from './dto/create-user.input';
 import { UpdateUserInput } from './dto/update-user.input';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
-import { Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { LocalProvider } from 'src/local-providers/entities/local-provider.entity';
 import { LocalProvidersService } from 'src/local-providers/local-providers.service';
 import { UpdateAvatarInput } from './dto/update-avatar.input';
@@ -12,6 +12,7 @@ import { FilesService } from 'src/files/files.service';
 @Injectable()
 export class UsersService {
   constructor(
+    private readonly dataSource: DataSource,
     @InjectRepository(User) private usersRepository: Repository<User>,
     private readonly localProvidersService: LocalProvidersService,
     private readonly filesServices: FilesService,
@@ -61,5 +62,25 @@ export class UsersService {
 
   async findLocalProviderByUserId(userId: string): Promise<LocalProvider> {
     return this.localProvidersService.findLocalProviderByUserId(userId);
+  }
+
+  async updateEmailVerified(userId: string, verified: boolean) {
+    return this.dataSource.transaction(async (manager) => {
+      const user = await manager.findOne(User, {
+        where: { id: userId },
+        lock: { mode: 'pessimistic_write' },
+        select: ['emailVerified'],
+      });
+
+      if (!user) {
+        throw new BadRequestException('User not found');
+      }
+
+      if (user.emailVerified) {
+        throw new BadRequestException('Email already verified');
+      }
+
+      await manager.update(User, { id: userId }, { emailVerified: verified });
+    });
   }
 }

@@ -1,0 +1,6 @@
+mutation ResendEmailVerificationMutation($resendEmailVerificationInput: ResendEmailVerificationInput!) {
+  resendEmailVerification(resendEmailVerificationInput: $resendEmailVerificationInput) {
+    success
+    message
+  }
+}
