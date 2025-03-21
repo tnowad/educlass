@@ -2,6 +2,11 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+type ActionResult {
+  message: String
+  success: Boolean!
+}
+
 type Assignment {
   attachements: [File!]!
   course: Course!
@@ -110,9 +115,10 @@ type Mutation {
   removeLocalProvider(id: String!): LocalProvider!
   removeUser(id: String!): User!
   requestPasswordReset(requestResetPasswordInput: RequestResetPasswordInput!): RequestResetPasswordResult!
+  resendEmailVerification(resendEmailVerificationInput: ResendEmailVerificationInput!): ActionResult!
   resetPassword(resetPasswordInput: ResetPasswordInput!): ResetPasswordResult!
   signIn(signInInput: SignInInput!): TokensResult!
-  signUp(signUpInput: SignUpInput!): TokensResult!
+  signUp(signUpInput: SignUpInput!): ActionResult!
   updateAssignment(updateAssignmentInput: UpdateAssignmentInput!): Assignment!
   updateAvatar(updateAvatarInput: UpdateAvatarInput!): User!
   updateCourse(updateCourseInput: UpdateCourseInput!): Course!
@@ -120,6 +126,7 @@ type Mutation {
   updateLocalProvider(updateLocalProviderInput: UpdateLocalProviderInput!): LocalProvider!
   updateUser(updateUserInput: UpdateUserInput!): User!
   uploadFile(uploadFileInput: UploadFileInput!): File!
+  verifyEmail(verifyEmailInput: VerifyEmailInput!): ActionResult!
 }
 
 type Query {
@@ -142,6 +149,10 @@ input RequestResetPasswordInput {
 type RequestResetPasswordResult {
   message: String
   success: Boolean!
+}
+
+input ResendEmailVerificationInput {
+  email: String!
 }
 
 input ResetPasswordInput {
@@ -226,4 +237,9 @@ type User {
   localProvider: LocalProvider
   name: String!
   updatedAt: DateTime!
+}
+
+input VerifyEmailInput {
+  code: String!
+  email: String!
 }

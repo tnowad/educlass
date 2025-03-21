@@ -12,6 +12,9 @@ import { GqlAuthGuard } from './graphql-auth.guard';
 import { User } from 'src/users/entities/user.entity';
 import { CurrentUser } from './decorators/user.decorator';
 import { UsersService } from 'src/users/users.service';
+import { ActionResult } from 'src/common/dtos/action.result';
+import { VerifyEmailInput } from './dtos/verify-email.input';
+import { ResendEmailVerificationInput } from './dtos/resend-email-verification.input';
 
 @Resolver()
 export class AuthResolver {
@@ -25,11 +28,27 @@ export class AuthResolver {
     return this.authService.signIn(signInInput);
   }
 
-  @Mutation(() => TokensResult)
+  @Mutation(() => ActionResult)
   async signUp(
     @Args('signUpInput') signUpInput: SignUpInput,
-  ): Promise<TokensResult> {
+  ): Promise<ActionResult> {
     return await this.authService.signUp(signUpInput);
+  }
+
+  @Mutation(() => ActionResult)
+  async verifyEmail(
+    @Args('verifyEmailInput') verifyEmailInput: VerifyEmailInput,
+  ): Promise<ActionResult> {
+    return await this.authService.verifyEmail(verifyEmailInput);
+  }
+  @Mutation(() => ActionResult)
+  async resendEmailVerification(
+    @Args('resendEmailVerificationInput')
+    resendEmailVerificationInput: ResendEmailVerificationInput,
+  ): Promise<ActionResult> {
+    return await this.authService.resendEmailVerification(
+      resendEmailVerificationInput,
+    );
   }
 
   @Mutation(() => User)
