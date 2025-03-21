@@ -1,5 +1,6 @@
 import { Field, ObjectType } from '@nestjs/graphql';
 import { Assignment } from 'src/assignments/entities/assignment.entity';
+import { Post } from 'src/posts/entities/post.entity';
 import {
   Column,
   CreateDateColumn,
@@ -51,4 +52,8 @@ export class Course {
   @Field(() => [Assignment], { nullable: true })
   @OneToMany(() => Assignment, (assignment) => assignment.course)
   assignments: Assignment[];
+
+  @Field(() => [Post], { nullable: true })
+  @OneToMany(() => Post, (post) => post.course, { cascade: true })
+  posts: Post[];
 }
