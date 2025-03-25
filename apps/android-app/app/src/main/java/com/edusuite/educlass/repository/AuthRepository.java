@@ -17,6 +17,7 @@ import com.edusuite.educlass.type.SignUpInput;
 import com.edusuite.educlass.type.VerifyEmailInput;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 import io.reactivex.rxjava3.core.Single;
@@ -29,7 +30,9 @@ public class AuthRepository {
     private final AuthStorage authStorage;
 
     @Inject
-    public AuthRepository(ApolloClient apolloClient, AuthStorage authStorage) {
+    public AuthRepository(
+        @Named("ApolloClientNoAuth") ApolloClient apolloClient,
+        AuthStorage authStorage) {
         this.apolloClient = apolloClient;
         this.authStorage = authStorage;
     }

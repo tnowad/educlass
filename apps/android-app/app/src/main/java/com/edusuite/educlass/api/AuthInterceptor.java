@@ -5,7 +5,6 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.apollographql.apollo3.ApolloClient;
 import com.apollographql.apollo3.api.http.HttpRequest;
 import com.apollographql.apollo3.api.http.HttpResponse;
 import com.apollographql.apollo3.network.http.HttpInterceptor;
@@ -30,14 +29,9 @@ public class AuthInterceptor implements HttpInterceptor {
     private SingleSubject<String> refreshTokenSubject;
 
     @Inject
-    public AuthInterceptor(AuthStorage authStorage) {
+    public AuthInterceptor(AuthStorage authStorage, AuthRepository authRepository) {
         this.authStorage = authStorage;
-        this.authRepository = new AuthRepository(
-            new ApolloClient.Builder()
-                .serverUrl("http://127.0.0.1:3000/graphql")
-                .build(),
-            authStorage
-        );
+        this.authRepository = authRepository;
     }
 
     @Nullable
