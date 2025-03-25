@@ -54,6 +54,12 @@ export class UsersResolver {
     return this.usersService.updateAvatar(user.id, updateAvatarInput);
   }
 
+  @Query(() => User)
+  @UseGuards(GqlAuthGuard)
+  async me(@CurrentUser() user: User): Promise<User> {
+    return this.usersService.findOne(user.id);
+  }
+
   @ResolveField(() => LocalProvider, { nullable: true })
   async localProvider(@Parent() user: User): Promise<LocalProvider> {
     return this.usersService.findLocalProviderByUserId(user.id);

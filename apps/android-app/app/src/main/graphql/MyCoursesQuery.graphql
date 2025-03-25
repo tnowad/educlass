@@ -1,0 +1,19 @@
+query MyCoursesQuery($first: Int, $after: String) {
+  courses(first: $first, after: $after, where: { userId: "me" }) {
+    edges {
+      node {
+        id
+        name
+        code
+        section
+        room
+        subject
+        code
+      }
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+  }
+}

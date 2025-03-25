@@ -47,6 +47,21 @@ enum CourseRole {
   PARTICIPANT
 }
 
+input CourseWhereInput {
+  name: String
+  userId: String
+}
+
+type CoursesConnection {
+  edges: [CoursesEdge!]!
+  pageInfo: PageInfo!
+}
+
+type CoursesEdge {
+  cursor: String!
+  node: Course!
+}
+
 input CreateAssignmentInput {
   attachements: [Upload!]
   courseId: String!
@@ -120,6 +135,7 @@ type Mutation {
   createUser(createUserInput: CreateUserInput!): User!
   deletePost(id: String!): Boolean!
   getCurrentUser: User!
+  refreshToken(refreshTokenInput: RefreshTokenInput!): TokensResult!
   removeAssignment(id: String!): Assignment!
   removeCourse(id: String!): Course!
   removeCourseParticipant(id: String!): Boolean!
@@ -141,9 +157,21 @@ type Mutation {
   verifyEmail(verifyEmailInput: VerifyEmailInput!): ActionResult!
 }
 
+enum OrderByDirection {
+  ASC
+  DESC
+}
+
+input OrderByInput {
+  createdAt: OrderByDirection
+  updatedAt: OrderByDirection
+}
+
 type PageInfo {
   endCursor: String
   hasNextPage: Boolean!
+  hasPreviousPage: Boolean!
+  startCursor: String
 }
 
 type Post {
@@ -157,29 +185,48 @@ type Post {
   updatedAt: DateTime!
 }
 
-type PostConnection {
-  edges: [PostEdge!]!
+type PostsConnection {
+  edges: [PostsEdge!]!
   pageInfo: PageInfo!
 }
 
-type PostEdge {
+type PostsEdge {
   cursor: String!
   node: Post!
 }
 
 type Query {
-  Course(id: String!): Course!
-  Courses: [Course!]!
   assignment(id: String!): Assignment!
   assignments: [Assignment!]!
+  course(id: String!): Course!
   courseParticipant(id: String!): CourseParticipant
   courseParticipants: [CourseParticipant!]!
-  findAllPosts(after: String, first: Float): PostConnection!
+  courses(
+    """Paginate after opaque cursor"""
+    after: String
+
+    """Paginate before opaque cursor"""
+    before: String
+
+    """Paginate first"""
+    first: Int
+
+    """Paginate last"""
+    last: Int
+    orderBy: OrderByInput
+    where: CourseWhereInput
+  ): CoursesConnection!
+  findAllPosts(after: String, first: Float): PostsConnection!
   findPostById(id: String!): Post!
   localProvider(id: String!): LocalProvider!
   localProviders: [LocalProvider!]!
+  me: User!
   user(id: String!): User!
   users: [User!]!
+}
+
+input RefreshTokenInput {
+  refreshToken: String!
 }
 
 input RequestResetPasswordInput {
@@ -288,6 +335,10 @@ type User {
   updatedAt: DateTime!
 }
 
+input VerifyEmailInput {
+  code: String!
+  email: String!
+}
 
 """Audience visibility of a post"""
 enum audience_enum {
@@ -296,12 +347,9 @@ enum audience_enum {
   RESTRICTED
 }
 
+"""Status of a post"""
 enum post_status_enum {
   ARCHIVED
   DRAFT
   PUBLISHED
-}
-input VerifyEmailInput {
-  code: String!
-  email: String!
 }

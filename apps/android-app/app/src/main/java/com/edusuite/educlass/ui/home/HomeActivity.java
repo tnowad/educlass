@@ -2,90 +2,94 @@ package com.edusuite.educlass.ui.home;
 
 import android.os.Bundle;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.ImageButton;
+import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.core.graphics.Insets;
 import androidx.core.view.GravityCompat;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.edusuite.educlass.R;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.edusuite.educlass.databinding.ActivityHomeBinding;
 import com.google.android.material.navigation.NavigationView;
 
+import dagger.hilt.android.AndroidEntryPoint;
+
+@AndroidEntryPoint
 public class HomeActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
-    private DrawerLayout drawerLayout;
-    private NavigationView navigationView;
-    private Toolbar toolbar;
-    private CourseViewModel mainViewModel;
-    private RecyclerView recyclerView;
-    private FloatingActionButton addCourseButton;
+    private ActivityHomeBinding binding;
+    private HomeViewModel viewModel;
+    private CourseAdapter courseAdapter;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_home);
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.drawerLayout), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
+        binding = ActivityHomeBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
+
+        viewModel = new ViewModelProvider(this).get(HomeViewModel.class);
+        setupToolbar();
+        setupDrawer();
+        setupRecyclerView();
+        setupObservers();
+
+        binding.addCourseButton.setOnClickListener(view -> {
+            Toast.makeText(this, "Create new class", Toast.LENGTH_SHORT).show();
         });
 
-        drawerLayout = findViewById(R.id.drawerLayout);
-        navigationView = findViewById(R.id.navigationView);
-        recyclerView = findViewById(R.id.recyclerViewMain);
-        View headerView = navigationView.getHeaderView(0);
-        ImageButton closeBtn = headerView.findViewById(R.id.closeButton);
-        toolbar = findViewById(R.id.toolbar);
-        addCourseButton = findViewById(R.id.addCourseButton);
-
-        setSupportActionBar(toolbar);
-        navigationView.bringToFront();
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.text_navigation_drawer_open, R.string.text_navigation_drawer_close);
-        drawerLayout.addDrawerListener(toggle);
-        toggle.syncState();
-        navigationView.setNavigationItemSelectedListener(this);
-
-        mainViewModel = new ViewModelProvider(this).get(CourseViewModel.class);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-
-        final CourseAdapter adapter = new CourseAdapter();
-        recyclerView.setAdapter(adapter);
-        mainViewModel.getCourseList().observe(this, adapter::setCourses);
-
-        closeBtn.setOnClickListener(v -> {
-            if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
-                drawerLayout.closeDrawer(GravityCompat.START);
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                if (binding.drawerLayout.isDrawerOpen(GravityCompat.START)) {
+                    binding.drawerLayout.closeDrawer(GravityCompat.START);
+                } else {
+                    finish();
+                }
             }
-        });
-
-        addCourseButton.setOnClickListener(v -> {
-            CourseOptionsBottomSheet bottomSheet = new CourseOptionsBottomSheet();
-            bottomSheet.show(getSupportFragmentManager(), bottomSheet.getTag());
         });
 
     }
 
 
-    @Override
-    public void onBackPressed() {
-        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
-            drawerLayout.closeDrawer(GravityCompat.START);
-        } else {
-            super.onBackPressed();
-        }
+    private void setupToolbar() {
+        setSupportActionBar(binding.toolbar);
+        getSupportActionBar().setTitle("Edu Class");
+        binding.toolbar.setNavigationOnClickListener(view -> binding.drawerLayout.openDrawer(GravityCompat.START));
+    }
+
+    private void setupDrawer() {
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+            this, binding.drawerLayout, binding.toolbar,
+            R.string.navigation_drawer_open, R.string.navigation_drawer_close
+        );
+        binding.drawerLayout.addDrawerListener(toggle);
+        toggle.syncState();
+        binding.navigationView.setNavigationItemSelectedListener(this);
+    }
+
+    private void setupRecyclerView() {
+        courseAdapter = new CourseAdapter(course -> {
+        });
+        binding.recyclerViewMain.setLayoutManager(new LinearLayoutManager(this));
+        binding.recyclerViewMain.setAdapter(courseAdapter);
+    }
+
+    private void setupObservers() {
+        viewModel.getCourses().observe(this, courses -> {
+            if (courses != null) {
+                courseAdapter.submitList(courses);
+            }
+        });
+        viewModel.getErrorMessage().observe(this, message -> {
+            if (message != null && !message.isEmpty()) {
+                Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     @Override

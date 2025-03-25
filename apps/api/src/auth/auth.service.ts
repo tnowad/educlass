@@ -27,6 +27,7 @@ import { ResendEmailVerificationInput } from './dtos/resend-email-verification.i
 import { randomInt } from 'crypto';
 import { LocalProvider } from 'src/local-providers/entities/local-provider.entity';
 import { DataSource } from 'typeorm';
+import { RefreshTokenInput } from './dtos/refresh-token.input';
 
 @Injectable()
 export class AuthService {
@@ -223,6 +224,27 @@ export class AuthService {
     return {
       success: true,
       message: 'Verification email sent',
+    };
+  }
+
+  async refreshToken(
+    refreshTokenInput: RefreshTokenInput,
+  ): Promise<TokensResult> {
+    const { refreshToken } = refreshTokenInput;
+    const payload = this.jwtService.verify<JwtPayload>(refreshToken);
+    if (!payload || !payload.sub) {
+      throw new UnauthorizedException('Invalid token payload');
+    }
+    const user = await this.userService.findOne(payload.sub);
+    if (!user) {
+      throw new UnauthorizedException('User not found');
+    }
+    return {
+      accessToken: this.jwtService.sign({
+        email: user.email,
+        sub: user.id,
+      }),
+      refreshToken,
     };
   }
 }

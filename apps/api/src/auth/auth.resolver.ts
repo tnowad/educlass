@@ -15,6 +15,7 @@ import { UsersService } from 'src/users/users.service';
 import { ActionResult } from 'src/common/dtos/action.result';
 import { VerifyEmailInput } from './dtos/verify-email.input';
 import { ResendEmailVerificationInput } from './dtos/resend-email-verification.input';
+import { RefreshTokenInput } from './dtos/refresh-token.input';
 
 @Resolver()
 export class AuthResolver {
@@ -26,6 +27,13 @@ export class AuthResolver {
   @Mutation(() => TokensResult)
   signIn(@Args('signInInput') signInInput: SignInInput): Promise<TokensResult> {
     return this.authService.signIn(signInInput);
+  }
+
+  @Mutation(() => TokensResult)
+  refreshToken(
+    @Args('refreshTokenInput') refreshTokenInput: RefreshTokenInput,
+  ): Promise<TokensResult> {
+    return this.authService.refreshToken(refreshTokenInput);
   }
 
   @Mutation(() => ActionResult)

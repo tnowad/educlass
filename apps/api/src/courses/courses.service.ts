@@ -3,10 +3,12 @@ import { CreateCourseInput } from './dto/create-course.input';
 import { UpdateCourseInput } from './dto/update-course.input';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Course } from './entities/course.entity';
-import { Repository } from 'typeorm';
+import { FindManyOptions, Repository } from 'typeorm';
 import * as crypto from 'crypto';
 import { CourseParticipant } from 'src/course-participants/entities/course-participant.entity';
 import { CourseRole } from 'src/course-participants/dto/role.enum';
+import { CoursesConnection } from './dto/course.input';
+import { ConnectionArgs, findAndPaginate } from 'nestjs-graphql-relay';
 
 @Injectable()
 export class CoursesService {
@@ -48,6 +50,18 @@ export class CoursesService {
 
   findAll() {
     return this.coursesRepository.find();
+  }
+
+  async find(
+    where: FindManyOptions<Course>['where'],
+    order: FindManyOptions<Course>['order'],
+    connectionArgs: ConnectionArgs,
+  ): Promise<CoursesConnection> {
+    return findAndPaginate(
+      { where, order },
+      connectionArgs,
+      this.coursesRepository,
+    );
   }
 
   findOne(id: string) {

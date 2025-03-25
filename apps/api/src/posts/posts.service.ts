@@ -7,7 +7,7 @@ import { UpdatePostInput } from './dto/update-post.input';
 import { CourseParticipantsService } from 'src/course-participants/course-participants.service';
 import { CoursesService } from 'src/courses/courses.service';
 import { User } from 'src/users/entities/user.entity';
-import { PostConnection } from './dto/post-conection';
+import { PostsConnection } from './dto/post.input';
 
 @Injectable()
 export class PostsService {
@@ -47,7 +47,7 @@ export class PostsService {
     return this.postRepository.save(post);
   }
 
-  async findAll(first = 10, after?: string): Promise<PostConnection> {
+  async findAll(first = 10, after?: string): Promise<PostsConnection> {
     const query = this.postRepository
       .createQueryBuilder('post')
       .leftJoinAndSelect('post.author', 'author')
@@ -70,6 +70,8 @@ export class PostsService {
     return {
       edges,
       pageInfo: {
+        hasPreviousPage: false,
+        startCursor: edges.length > 0 ? edges[0].cursor : null,
         hasNextPage,
         endCursor: hasNextPage ? edges[edges.length - 1].cursor : null,
       },

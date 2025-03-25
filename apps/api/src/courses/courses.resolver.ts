@@ -7,6 +7,7 @@ import { UseGuards } from '@nestjs/common';
 import { GqlAuthGuard } from 'src/auth/graphql-auth.guard';
 import { CurrentUser } from 'src/auth/decorators/user.decorator';
 import { User } from 'src/users/entities/user.entity';
+import { CoursesConnection, CoursesConnectionArgs } from './dto/course.input';
 
 @Resolver(() => Course)
 export class CoursesResolver {
@@ -25,13 +26,19 @@ export class CoursesResolver {
     });
   }
 
-  @Query(() => [Course], { name: 'Courses' })
+  @Query(() => CoursesConnection, { name: 'courses' })
   @UseGuards(GqlAuthGuard)
-  async findAll() {
-    return this.coursesService.findAll();
+  async findAll(
+    @Args() connectionArgs: CoursesConnectionArgs,
+  ): Promise<CoursesConnection> {
+    return this.coursesService.find(
+      connectionArgs.where,
+      connectionArgs.orderBy,
+      connectionArgs,
+    );
   }
 
-  @Query(() => Course, { name: 'Course' })
+  @Query(() => Course, { name: 'course' })
   @UseGuards(GqlAuthGuard)
   async findOne(@Args('id') id: string) {
     return this.coursesService.findOne(id);

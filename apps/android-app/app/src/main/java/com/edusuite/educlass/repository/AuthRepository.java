@@ -1,12 +1,16 @@
 package com.edusuite.educlass.repository;
 
+import android.util.Log;
+
 import com.apollographql.apollo3.ApolloClient;
 import com.apollographql.apollo3.rx3.Rx3Apollo;
+import com.edusuite.educlass.RefreshTokenMutation;
 import com.edusuite.educlass.ResendEmailVerificationMutation;
 import com.edusuite.educlass.SignInMutation;
 import com.edusuite.educlass.SignUpMutation;
 import com.edusuite.educlass.VerifyEmailMutation;
 import com.edusuite.educlass.storage.AuthStorage;
+import com.edusuite.educlass.type.RefreshTokenInput;
 import com.edusuite.educlass.type.ResendEmailVerificationInput;
 import com.edusuite.educlass.type.SignInInput;
 import com.edusuite.educlass.type.SignUpInput;
@@ -19,6 +23,7 @@ import io.reactivex.rxjava3.core.Single;
 
 @Singleton
 public class AuthRepository {
+    private static final String TAG = "AuthRepository";
 
     private final ApolloClient apolloClient;
     private final AuthStorage authStorage;
@@ -30,42 +35,72 @@ public class AuthRepository {
     }
 
     public Single<SignInMutation.Data> signIn(String email, String password) {
+        Log.d(TAG, "Signing in with email: " + email);
         SignInInput signInInput = new SignInInput(email, password);
 
         return Rx3Apollo.single(apolloClient.mutation(new SignInMutation(signInInput)))
-            .map(response -> {
+            .doOnSuccess(response -> {
                 if (response.data != null) {
+                    Log.d(TAG, "Sign-in successful for email: " + email);
                     authStorage.saveTokens(
                         response.data.getSignIn().getAccessToken(),
                         response.data.getSignIn().getRefreshToken()
                     );
+                } else {
+                    Log.w(TAG, "Sign-in response data is null for email: " + email);
                 }
-                return response.data;
             })
-            .onErrorResumeNext(Single::error);
+            .doOnError(error -> Log.e(TAG, "Sign-in failed for email: " + email, error))
+            .map(response -> response.data);
     }
 
     public Single<SignUpMutation.Data> signUp(String email, String password, String name) {
+        Log.d(TAG, "Signing up with email: " + email);
         SignUpInput signUpInput = new SignUpInput(email, name, password);
 
         return Rx3Apollo.single(apolloClient.mutation(new SignUpMutation(signUpInput)))
-            .map(response -> response.data)
-            .onErrorResumeNext(Single::error);
+            .doOnSuccess(response -> Log.d(TAG, "Sign-up successful for email: " + email))
+            .doOnError(error -> Log.e(TAG, "Sign-up failed for email: " + email, error))
+            .map(response -> response.data);
     }
 
     public Single<VerifyEmailMutation.Data> verifyEmail(String email, String code) {
+        Log.d(TAG, "Verifying email: " + email);
         VerifyEmailInput verifyEmailInput = new VerifyEmailInput(code, email);
 
         return Rx3Apollo.single(apolloClient.mutation(new VerifyEmailMutation(verifyEmailInput)))
-            .map(response -> response.data)
-            .onErrorResumeNext(Single::error);
+            .doOnSuccess(response -> Log.d(TAG, "Email verification successful for email: " + email))
+            .doOnError(error -> Log.e(TAG, "Email verification failed for email: " + email, error))
+            .map(response -> response.data);
     }
 
     public Single<ResendEmailVerificationMutation.Data> resendEmailVerification(String email) {
+        Log.d(TAG, "Resending email verification for email: " + email);
         var input = new ResendEmailVerificationInput(email);
 
         return Rx3Apollo.single(apolloClient.mutation(new ResendEmailVerificationMutation(input)))
-            .map(response -> response.data)
-            .onErrorResumeNext(Single::error);
+            .doOnSuccess(response -> Log.d(TAG, "Resend email verification successful for email: " + email))
+            .doOnError(error -> Log.e(TAG, "Resend email verification failed for email: " + email, error))
+            .map(response -> response.data);
+    }
+
+    public Single<RefreshTokenMutation.Data> refreshToken(String refreshToken) {
+        Log.d(TAG, "Refreshing token");
+        RefreshTokenInput input = new RefreshTokenInput(refreshToken);
+
+        return Rx3Apollo.single(apolloClient.mutation(new RefreshTokenMutation(input)))
+            .doOnSuccess(response -> {
+                if (response.data != null) {
+                    Log.d(TAG, "Token refresh successful");
+                    authStorage.saveTokens(
+                        response.data.getRefreshToken().getAccessToken(),
+                        response.data.getRefreshToken().getRefreshToken()
+                    );
+                } else {
+                    Log.w(TAG, "Token refresh response data is null");
+                }
+            })
+            .doOnError(error -> Log.e(TAG, "Token refresh failed", error))
+            .map(response -> response.data);
     }
 }
