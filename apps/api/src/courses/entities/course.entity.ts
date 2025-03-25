@@ -1,11 +1,14 @@
 import { Field, ObjectType } from '@nestjs/graphql';
 import { Assignment } from 'src/assignments/entities/assignment.entity';
+import { File } from 'src/files/entities/file.entity';
 import { Post } from 'src/posts/entities/post.entity';
 import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -56,4 +59,9 @@ export class Course {
   @Field(() => [Post], { nullable: true })
   @OneToMany(() => Post, (post) => post.course, { cascade: true })
   posts: Post[];
+
+  @Field(() => File, { nullable: true })
+  @OneToOne(() => File, { nullable: true, cascade: true, onDelete: 'SET NULL' })
+  @JoinColumn({ name: 'cover_id' })
+  cover?: File;
 }
