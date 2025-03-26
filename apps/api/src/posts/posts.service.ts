@@ -7,7 +7,12 @@ import { UpdatePostInput } from './dto/update-post.input';
 import { CourseParticipantsService } from 'src/course-participants/course-participants.service';
 import { CoursesService } from 'src/courses/courses.service';
 import { User } from 'src/users/entities/user.entity';
-import { PostsConnection } from './dto/post.input';
+import {
+  PostsConnection,
+  PostsConnectionArgs,
+  PostWhereInput,
+} from './dto/post.input';
+import { findAndPaginate, OrderByInput } from 'nestjs-graphql-relay';
 
 @Injectable()
 export class PostsService {
@@ -136,5 +141,17 @@ export class PostsService {
 
     const result = await this.postRepository.delete(id);
     return result.affected > 0;
+  }
+
+  find(
+    where: PostWhereInput,
+    order: OrderByInput,
+    connectionArgs: PostsConnectionArgs,
+  ): PostsConnection | PromiseLike<PostsConnection> {
+    return findAndPaginate(
+      { where, order },
+      connectionArgs,
+      this.postRepository,
+    );
   }
 }

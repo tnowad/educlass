@@ -46,6 +46,7 @@ export class Post {
   @Field(() => Course)
   @ManyToOne(() => Course, (course) => course.posts, { onDelete: 'CASCADE' })
   course: Course;
+
   @Field()
   @Column({ type: 'text' })
   content: string;
