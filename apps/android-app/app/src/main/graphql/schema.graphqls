@@ -185,6 +185,11 @@ type Post {
   updatedAt: DateTime!
 }
 
+input PostWhereInput {
+  content: String
+  courseId: String
+}
+
 type PostsConnection {
   edges: [PostsEdge!]!
   pageInfo: PageInfo!
@@ -216,11 +221,25 @@ type Query {
     orderBy: OrderByInput
     where: CourseWhereInput
   ): CoursesConnection!
-  findAllPosts(after: String, first: Float): PostsConnection!
   findPostById(id: String!): Post!
   localProvider(id: String!): LocalProvider!
   localProviders: [LocalProvider!]!
   me: User!
+  posts(
+    """Paginate after opaque cursor"""
+    after: String
+
+    """Paginate before opaque cursor"""
+    before: String
+
+    """Paginate first"""
+    first: Int
+
+    """Paginate last"""
+    last: Int
+    orderBy: OrderByInput
+    where: PostWhereInput
+  ): PostsConnection!
   user(id: String!): User!
   users: [User!]!
 }

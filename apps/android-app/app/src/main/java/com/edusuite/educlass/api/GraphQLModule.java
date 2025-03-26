@@ -1,5 +1,7 @@
 package com.edusuite.educlass.api;
 
+import androidx.annotation.NonNull;
+
 import com.apollographql.apollo3.ApolloClient;
 import com.edusuite.educlass.repository.AuthRepository;
 import com.edusuite.educlass.storage.AuthStorage;
@@ -37,6 +39,7 @@ public class GraphQLModule {
             .build();
     }
 
+    @NonNull
     @Provides
     @Singleton
     public static AuthInterceptor provideAuthInterceptor(AuthStorage authStorage, AuthRepository authRepository) {

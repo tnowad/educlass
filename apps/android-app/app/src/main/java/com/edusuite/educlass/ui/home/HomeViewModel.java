@@ -34,7 +34,9 @@ public class HomeViewModel extends ViewModel {
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
-                courses::setValue,
+                (coursePagedResult) -> {
+                    courses.setValue(coursePagedResult.items);
+                },
                 throwable -> errorMessage.setValue("Failed to load courses")
             )
         );

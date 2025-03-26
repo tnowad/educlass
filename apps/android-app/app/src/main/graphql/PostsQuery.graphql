@@ -1,0 +1,14 @@
+query PostsQuery($first: Int, $after: String, $where: PostWhereInput) {
+  posts(first: $first, after: $after, where: $where) {
+    edges {
+      node {
+        id
+        content
+      }
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+  }
+}

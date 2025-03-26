@@ -1,0 +1,11 @@
+query CourseQuery($courseId: String!) {
+  course(id: $courseId) {
+    id
+    name
+    code
+    section
+    room
+    subject
+    code
+  }
+}
