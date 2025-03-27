@@ -15,10 +15,15 @@ import { UpdateAvatarInput } from './dto/update-avatar.input';
 import { GqlAuthGuard } from 'src/auth/graphql-auth.guard';
 import { UseGuards } from '@nestjs/common';
 import { CurrentUser } from 'src/auth/decorators/user.decorator';
+import { Course } from 'src/courses/entities/course.entity';
+import { CoursesService } from 'src/courses/courses.service';
 
 @Resolver(() => User)
 export class UsersResolver {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(
+    private readonly usersService: UsersService,
+    private readonly coursesService:CoursesService
+  ) {}
 
   @Mutation(() => User)
   createUser(@Args('createUserInput') createUserInput: CreateUserInput) {
@@ -63,5 +68,11 @@ export class UsersResolver {
   @ResolveField(() => LocalProvider, { nullable: true })
   async localProvider(@Parent() user: User): Promise<LocalProvider> {
     return this.usersService.findLocalProviderByUserId(user.id);
+  }
+
+  @Query(() => [Course], {name: 'MyCourses'})
+  @UseGuards(GqlAuthGuard)
+  async myCourses(@CurrentUser() user:User): Promise<Course[]>{
+    return this.coursesService.findCoursesByUserId(user.id)
   }
 }

@@ -3,7 +3,7 @@ import { CreateCourseInput } from './dto/create-course.input';
 import { UpdateCourseInput } from './dto/update-course.input';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Course } from './entities/course.entity';
-import { FindManyOptions, Repository } from 'typeorm';
+import { FindManyOptions, In, Repository } from 'typeorm';
 import * as crypto from 'crypto';
 import { CourseParticipant } from 'src/course-participants/entities/course-participant.entity';
 import { CourseRole } from 'src/course-participants/dto/role.enum';
@@ -16,7 +16,7 @@ export class CoursesService {
     @InjectRepository(Course) private coursesRepository: Repository<Course>,
     @InjectRepository(CourseParticipant)
     private readonly courseParticipantsRepository: Repository<CourseParticipant>,
-  ) {}
+  ) { }
   async create(createCourseInput: CreateCourseInput & { userId: string }) {
     const code = crypto
       .randomBytes(5)
@@ -94,5 +94,26 @@ export class CoursesService {
     await this.coursesRepository.delete(id);
 
     return course;
+  }
+
+  async findCoursesByUserId(userId: string): Promise<Course[]> {
+
+    const participants = await this.courseParticipantsRepository.find({
+      where: {
+        userId: userId
+      },
+    })
+
+    if (participants.length === 0) {
+      return [];
+    }
+
+    const courseIds = participants.map(p => p.courseId);
+
+    return this.coursesRepository.find({
+      where: {
+        id: In(courseIds)
+      }
+    })
   }
 }
