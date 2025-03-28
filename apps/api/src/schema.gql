@@ -196,6 +196,7 @@ type PostsEdge {
 }
 
 type Query {
+  MyCourses(after: String, first: Float): CoursesConnection!
   assignment(id: String!): Assignment!
   assignments: [Assignment!]!
   course(id: String!): Course!
