@@ -96,24 +96,57 @@ export class CoursesService {
     return course;
   }
 
-  async findCoursesByUserId(userId: string): Promise<Course[]> {
 
+  async findCoursesByUserId(
+    userId: string,
+    first = 10,
+    after?: string,
+  ): Promise<CoursesConnection> {
     const participants = await this.courseParticipantsRepository.find({
-      where: {
-        userId: userId
-      },
-    })
+      where: { userId },
+    });
 
     if (participants.length === 0) {
-      return [];
+      return {
+        edges: [],
+        pageInfo: {
+          hasNextPage: false,
+          hasPreviousPage: false,
+          startCursor: null,
+          endCursor: null,
+        },
+      };
     }
 
-    const courseIds = participants.map(p => p.courseId);
+    const courseIds = participants.map((p) => p.courseId);
 
-    return this.coursesRepository.find({
-      where: {
-        id: In(courseIds)
-      }
-    })
+    const query = this.coursesRepository
+      .createQueryBuilder('course')
+      .where({ id: In(courseIds) })
+      .orderBy('course.createdAt', 'DESC')
+      .take(first + 1);
+
+    if (after) {
+      query.andWhere('course.createdAt < :after', {
+        after: new Date(after)
+      });
+    }
+
+    const courses = await query.getMany();
+    const hasNextPage = courses.length > first;
+    const edges = courses.slice(0, first).map((course) => ({
+      cursor: course.createdAt.toISOString(),
+      node: course,
+    }));
+
+    return {
+      edges,
+      pageInfo: {
+        hasNextPage,
+        hasPreviousPage: false, 
+        startCursor: edges.length > 0 ? edges[0].cursor : null,
+        endCursor: edges.length > 0 ? edges[edges.length - 1].cursor : null,
+      },
+    };
   }
 }

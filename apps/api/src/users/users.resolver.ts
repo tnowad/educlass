@@ -17,6 +17,7 @@ import { UseGuards } from '@nestjs/common';
 import { CurrentUser } from 'src/auth/decorators/user.decorator';
 import { Course } from 'src/courses/entities/course.entity';
 import { CoursesService } from 'src/courses/courses.service';
+import { CoursesConnection } from 'src/courses/dto/course.input';
 
 @Resolver(() => User)
 export class UsersResolver {
@@ -70,9 +71,13 @@ export class UsersResolver {
     return this.usersService.findLocalProviderByUserId(user.id);
   }
 
-  @Query(() => [Course], {name: 'MyCourses'})
+  @Query(() => CoursesConnection, {name: 'MyCourses'})
   @UseGuards(GqlAuthGuard)
-  async myCourses(@CurrentUser() user:User): Promise<Course[]>{
-    return this.coursesService.findCoursesByUserId(user.id)
+  async myCourses(
+    @CurrentUser() user:User,
+    @Args('first', { type: () => Number, nullable: true}) first?:number,
+    @Args('after', { type: () => String, nullable: true}) after?: string,
+  ): Promise<CoursesConnection>{
+    return this.coursesService.findCoursesByUserId(user.id, first, after)
   }
 }
