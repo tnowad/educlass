@@ -3,7 +3,7 @@ import { CreateCourseInput } from './dto/create-course.input';
 import { UpdateCourseInput } from './dto/update-course.input';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Course } from './entities/course.entity';
-import { FindManyOptions, Repository } from 'typeorm';
+import { FindManyOptions, In, Repository } from 'typeorm';
 import * as crypto from 'crypto';
 import { CourseParticipant } from 'src/course-participants/entities/course-participant.entity';
 import { CourseRole } from 'src/course-participants/dto/role.enum';
@@ -16,7 +16,7 @@ export class CoursesService {
     @InjectRepository(Course) private coursesRepository: Repository<Course>,
     @InjectRepository(CourseParticipant)
     private readonly courseParticipantsRepository: Repository<CourseParticipant>,
-  ) {}
+  ) { }
   async create(createCourseInput: CreateCourseInput & { userId: string }) {
     const code = crypto
       .randomBytes(5)
@@ -94,5 +94,59 @@ export class CoursesService {
     await this.coursesRepository.delete(id);
 
     return course;
+  }
+
+
+  async findCoursesByUserId(
+    userId: string,
+    first = 10,
+    after?: string,
+  ): Promise<CoursesConnection> {
+    const participants = await this.courseParticipantsRepository.find({
+      where: { userId },
+    });
+
+    if (participants.length === 0) {
+      return {
+        edges: [],
+        pageInfo: {
+          hasNextPage: false,
+          hasPreviousPage: false,
+          startCursor: null,
+          endCursor: null,
+        },
+      };
+    }
+
+    const courseIds = participants.map((p) => p.courseId);
+
+    const query = this.coursesRepository
+      .createQueryBuilder('course')
+      .where({ id: In(courseIds) })
+      .orderBy('course.createdAt', 'DESC')
+      .take(first + 1);
+
+    if (after) {
+      query.andWhere('course.createdAt < :after', {
+        after: new Date(after)
+      });
+    }
+
+    const courses = await query.getMany();
+    const hasNextPage = courses.length > first;
+    const edges = courses.slice(0, first).map((course) => ({
+      cursor: course.createdAt.toISOString(),
+      node: course,
+    }));
+
+    return {
+      edges,
+      pageInfo: {
+        hasNextPage,
+        hasPreviousPage: false, 
+        startCursor: edges.length > 0 ? edges[0].cursor : null,
+        endCursor: edges.length > 0 ? edges[edges.length - 1].cursor : null,
+      },
+    };
   }
 }
